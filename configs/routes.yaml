@@ -1,0 +1,130 @@
+
+# Usage:
+# Route Access Type > Route > Route Config
+#
+# HTTP Route allows the following config:
+# - path : The relative path to this route. Mandatory config.
+# - method : Restrict path access to the given HTTP method.
+# - controller : The controller to use to process this route
+# - restrictTo : Restriction configuration for this route, you can customize accessibility, the common field is "role".
+# - render : The template to render this route, using StaticPageController. Processed as option.
+# Other fields will be send as options to the controller, controller can access to all this configuration.
+#
+# Roles: visitor, member, moderator, administrator, developer
+# Unspecified role does not restrict access, "visitor" restricts to not-logged user only.
+
+http:
+    home:
+        path: "/"
+        controller: "RedirectController"
+        
+    login:
+        path: "/login.html"
+        controller: "LoginController"
+        restrictTo:
+          role: visitor
+          
+    logout:
+        path: "/logout.html"
+        controller: "LogoutController"
+        restrictTo:
+          role: member
+        
+    faq:
+        path: "/faq.html"
+        render: "app/faq"
+        
+    user_index:
+        path: "/user/"
+        redirect: "user_dashboard"
+        
+    user_dashboard:
+        path: "/user/dashboard.html"
+        controller: "UserWorkController"
+        restrictTo:
+          role: member
+        
+    user_projects:
+        path: "/user/projects.html"
+        controller: "UserProjectsController"
+        restrictTo:
+          role: member
+        
+    user_project:
+        path: "/user/project/{id:projectID}.html"
+        controller: "ProjectController"
+        restrictTo:
+          role: member
+        
+    user_project_history:
+        path: "/user/project/{id:projectID}/history.html"
+        controller: "ProjectHistoryController"
+        restrictTo:
+          role: member
+        
+    adm_mysettings:
+        path: "/admin/my_settings.html"
+        controller: "AdminMySettingsController"
+        restrictTo:
+          role: member
+        
+    adm_users:
+        path: "/admin/users.html"
+        controller: "AdminUserListController"
+        restrictTo:
+          role: administrator
+        
+    adm_user:
+        path: "/admin/user/{id:userID}.html"
+        controller: "AdminUserEditController"
+        restrictTo:
+          role: administrator
+        
+    adm_config:
+        path: "/admin/config.html"
+        controller: "AdminConfigController"
+        restrictTo:
+          role: developer
+        
+    dev_entities:
+        path: "/admin/dev_entities.html"
+        controller: "DevEntitiesController"
+        restrictTo:
+          role: developer
+        
+    file_download:
+        path: "/download/{id:fileID}"
+        controller: "FileDownloadController"
+        
+    setup_start:
+        path: "/setup/"
+        controller: "StartSetupController"
+        
+    setup_checkfs:
+        path: "/setup/check-filesystem.html"
+        controller: "CheckFileSystemSetupController"
+        
+    setup_checkdb:
+        path: "/setup/check-database.html"
+        controller: "CheckDatabaseSetupController"
+        
+    setup_installdb:
+        path: "/setup/install-database.html"
+        controller: "InstallDatabaseSetupController"
+        
+    setup_installfixtures:
+        path: "/setup/install-fixtures.html"
+        controller: "InstallFixturesSetupController"
+        
+    setup_end:
+        path: "/setup/finish.html"
+        controller: "EndSetupController"
+        
+#    home:
+#        path: "/path/in/array/config"
+#        method: "POST|GET"
+#        method: "GET"
+#        controller: "HomeController"
+#    home2: "/path/with/all/methods->HomeController"
+#    home3: "POST(/path/for/POST/method)->HomeController"
+    

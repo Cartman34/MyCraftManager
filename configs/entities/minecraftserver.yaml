@@ -1,0 +1,16 @@
+
+# Project descriptor
+
+fields:
+    create_date:        datetime=sqlDatetime()
+    create_ip:          ip=clientIP()
+    create_user_id:     ref(user)=userID()
+    owner_id:           ref(user)=userID()
+    slug:               string(3, 50)
+    name:               string(3, 50)
+
+indexes:
+     - INDEX(owner_id)
+     - INDEX(slug)
+     - FULLTEXT(name)
+     
