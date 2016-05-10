@@ -45,6 +45,7 @@ class AdminMySettingsController extends AdminController {
 		return $this->renderHTML('app/admin_useredit', array(
 			'USER_CAN_USER_EDIT'	=> $USER_CAN_USER_EDIT,
 			'USER_CAN_USER_GRANT'	=> false,
+			'USER_CAN_USER_DELETE'	=> false,
 			'user'	=> $user
 		));
 	}

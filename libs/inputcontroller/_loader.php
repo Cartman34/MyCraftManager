@@ -1,6 +1,7 @@
 <?php
-/** InputController Library
-
+/**
+ * InputController Library
+ * 
  * InputController library to bring MVC features
  * 
  */

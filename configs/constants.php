@@ -44,13 +44,18 @@ defifn('STATIC_URL',		SITEROOT.'static/');
 define('ROUTE_LOGIN',			'login');
 define('ROUTE_LOGOUT',			'logout');
 define('ROUTE_DASHBOARD',		'user_dashboard');
-define('ROUTE_USERPROJECTS',	'user_projects');
-define('ROUTE_PROJECT',			'user_project');
-define('ROUTE_PROJECT_HISTORY',	'user_project_history');
+
+define('ROUTE_ADM_USERS',		'adm_users');
+define('ROUTE_ADM_USER',		'adm_user');
+define('ROUTE_ADM_MYSETTINGS',	'adm_mysettings');
+
+define('ROUTE_USER_SERVERS',	'user_servers');
+define('ROUTE_USER_SERVER',		'user_server');
 
 // Route
 defifn('DEFAULTROUTE',			ROUTE_LOGIN);
-defifn('DEFAULTMEMBERROUTE',	ROUTE_DASHBOARD);
+// defifn('DEFAULTMEMBERROUTE',	ROUTE_DASHBOARD);
+defifn('DEFAULTMEMBERROUTE',	ROUTE_USER_SERVERS);
 defifn('DEFAULTHOST',			'domain.com');
 defifn('DEFAULTPATH',			'');
 

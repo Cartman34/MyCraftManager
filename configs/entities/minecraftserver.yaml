@@ -6,11 +6,20 @@ fields:
     create_ip:          ip=clientIP()
     create_user_id:     ref(user)=userID()
     owner_id:           ref(user)=userID()
+    
     slug:               string(3, 50)
     name:               string(3, 50)
+    software_id:        ref(serversoftware)
+    ssh_host:           string(100)
+    ssh_port:           natural(65535)[nullable]    # SSH Port, default is 22
+    ssh_user:           string(50)
+    ssh_password:       string(100)
+    rcon_port:          natural(65535)[nullable]    # RCON Port, default is 25575
+    rcon_password:      string(100)[nullable]
+    
+    pid:                string(10)[nullable]
 
 indexes:
      - INDEX(owner_id)
      - INDEX(slug)
-     - FULLTEXT(name)
      

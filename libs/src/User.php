@@ -34,32 +34,6 @@ class User extends AbstractUser implements FixtureInterface {
 	// *** OVERLOADED METHODS ***
 	
 	
-	/**
-	 * @return ProjectUser[]
-	 */
-	public function listActiveProjectUsers() {
-		$r	= array();
-		foreach( $this->listProjectUsers() as $projectUser ) {
-			if( $projectUser->isWorking() ) {
-				$r[]	= $projectUser;
-			}
-		}
-		return $r;
-// 		return ProjectUser::get()->where('user_id='.$this->id().' AND workingday_id')->orderby('id DESC')->run();
-// 		if( !$this->activeProjectUsers ) {
-// 			$this->activeProjectUsers = ProjectUser::get()->where('user_id='.$this->id().' AND workingday_id')->orderby('id DESC')->run();
-// 		}
-// 		return $this->activeProjectUsers;
-	}
-// 	protected $activeProjectUsers	= array();
-	
-	/**
-	 * @return ProjectUser[]
-	 */
-	public function listProjectUsers() {
-		return ProjectUser::get()->where('user_id='.$this->id())->orderby('id DESC')->run();
-	}
-	
 	public function onConnected() {
 		date_default_timezone_set($this->timezone);
 	}
@@ -164,24 +138,6 @@ class User extends AbstractUser implements FixtureInterface {
 	public function canEntityDelete($context=CRAC_CONTEXT_APPLICATION, $contextResource=null) {
 		return $this->canDo('entity_delete');// Only App admins can do it.
 	}
-	
-
-	// 		** CHECK METHODS **
-
-// 	public static function checkFullName($inputData) {
-// 		if( empty($inputData['fullname']) ) {
-// 			static::throwException('invalidFullName');
-// 		}
-// 		return strip_tags($inputData['fullname']);
-// 	}
-	
-// 	public static function checkUserInput($uInputData, $fields=null, $ref=null, &$errCount=0) {
-// 		$data = parent::checkUserInput($uInputData, $fields, $ref, $errCount);
-// 		if( !empty($uInputData['password']) ) {
-// 			$data['real_password'] = $uInputData['password'];
-// 		}
-// 		return $data;
-// 	}
 
 	public static function loadFixtures() {
 		static::create(array(

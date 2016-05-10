@@ -165,6 +165,7 @@ foreach(HTMLRendering::listCSSURLs() as $url) {
 				</li>
 			*/
 			if( User::isLogged() ) {
+				/*
 				$activeProjectUsers	= $USER->listActiveProjectUsers();
 				if( $activeProjectUsers ) {
 					$project	= $activeProjectUsers[0]->getProject();
@@ -174,6 +175,7 @@ foreach(HTMLRendering::listCSSURLs() as $url) {
 					</li>
 					<?php
 				}
+				*/
 				?>
 				<li class="dropdown user-dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $USER; ?> <b class="caret"></b></a>
@@ -202,6 +204,11 @@ foreach(HTMLRendering::listCSSURLs() as $url) {
 			<div class="row">
 				<div class="col-lg-12">
 					<?php
+					if( empty($NO_MODULE_TITLE) ) {
+						?>
+					<h1 class="page-header"><?php echo isset($ModuleTitle) ? $ModuleTitle : t(isset($titleRoute) ? $titleRoute : $routeName); ?> <small><?php _t((isset($titleRoute) ? $titleRoute : $routeName).'_legend'); ?></small></h1>
+					<?php
+					}
 					if( !empty($Breadcrumb) ) {
 						?>
 					<ol class="breadcrumb">
@@ -218,11 +225,6 @@ foreach(HTMLRendering::listCSSURLs() as $url) {
 						}
 						?>
 					</ol>
-					<?php
-					}
-					if( empty($NO_MODULE_TITLE) ) {
-						?>
-					<h1><?php echo isset($ModuleTitle) ? $ModuleTitle : t(isset($titleRoute) ? $titleRoute : $routeName); ?> <small><?php _t((isset($titleRoute) ? $titleRoute : $routeName).'_legend'); ?></small></h1>
 					<?php
 					}
 					$this->display('reports-bootstrap3');

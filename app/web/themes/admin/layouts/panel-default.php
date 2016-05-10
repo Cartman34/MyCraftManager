@@ -1,7 +1,6 @@
 <?php
 /* @var HTMLRendering $this */
 /* @var HTTPController $Controller */
-/* @var User $USER */
 
 if( !isset($title) ) {
 	$title	= '';
@@ -11,15 +10,15 @@ if( !isset($footer) ) {
 	$footer	= '';
 }
 
-if( !isset($actions) ) {
-	$actions	= 0;
-} else 
-if( empty($title) ) {
-	$title	= '&nbsp;';
-}
+// if( !isset($actions) ) {
+// 	$actions	= 0;
+// } else 
+// if( empty($title) ) {
+// 	$title	= '&nbsp;';
+// }
 
 ?>
-<div class="panel panel-inverse">
+<div class="panel panel-default">
 	<?php if( !empty($title) ) { ?>
 	<div class="panel-heading">
 		<h4 class="panel-title"><?php echo $title; ?></h4>
@@ -29,7 +28,6 @@ if( empty($title) ) {
 <?php
 echo $Content;
 ?>
-
 	</div>
 	<?php
 	echo $footer;

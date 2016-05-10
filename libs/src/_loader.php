@@ -23,6 +23,9 @@ addAutoload('AdminMySettingsController',		'src/controllers/admin/AdminMySettings
 addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListController');
 addAutoload('AdminUserEditController',			'src/controllers/admin/AdminUserEditController');
 
+addAutoload('UserServersController',			'src/controllers/user/UserServersController');
+addAutoload('MinecraftServerController',		'src/controllers/user/MinecraftServerController');
+
 addAutoload('FileDownloadController',			'src/controllers/FileDownloadController');
 addAutoload('HomeController',					'src/controllers/HomeController');
 
@@ -36,14 +39,24 @@ addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListCon
 addAutoload('AdminConfigController',			'src/controllers/admin/AdminConfigController');
 addAutoload('DevEntitiesController',			'src/controllers/admin/DevEntitiesController');
 
+addAutoload('MinecraftQuery',					'src/MinecraftQuery');
+
+addAutoload('SetupController',					'src/controllers/setup/SetupController');
+addAutoload('StartSetupController',				'src/controllers/setup/StartSetupController');
+addAutoload('CheckFileSystemSetupController',	'src/controllers/setup/CheckFileSystemSetupController');
+addAutoload('CheckDatabaseSetupController',		'src/controllers/setup/CheckDatabaseSetupController');
+addAutoload('InstallDatabaseSetupController',	'src/controllers/setup/InstallDatabaseSetupController');
+addAutoload('InstallFixturesSetupController',	'src/controllers/setup/InstallFixturesSetupController');
+addAutoload('EndSetupController',				'src/controllers/setup/EndSetupController');
+
+defifn('DOMAIN_SETUP',		'setup');
+
 // addAutoload('Session',							'sessionhandler/dbsession');
 
 // Entities
 PermanentEntity::registerEntity('File');
 PermanentEntity::registerEntity('User');
-PermanentEntity::registerEntity('Project');
-PermanentEntity::registerEntity('ProjectUser');
-PermanentEntity::registerEntity('ProjectWorkingDay');
+// PermanentEntity::registerEntity('MinecraftServer');
 
 // Fixtures
 FixtureRepository::register('User');

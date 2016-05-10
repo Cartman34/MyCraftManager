@@ -108,7 +108,7 @@ abstract class SQLAdapter {
 			throw new SQLException('Database configuration with name "'.$name.'" requires an unknown driver "'.$config['driver'].'".', 'Loading configuration');
 		}
 		
-		return new static::$adapters[$config['driver']]($config);
+		return new static::$adapters[$config['driver']]($name, $config);
 		
 	}
 	

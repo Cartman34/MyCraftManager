@@ -11,7 +11,7 @@
  * @property string $slug
  * @property string $name
  */
-class Project extends PermanentEntity {
+class MinecraftServer extends PermanentEntity {
 
 	//Attributes
 	protected static $table		= 'minecraftserver';

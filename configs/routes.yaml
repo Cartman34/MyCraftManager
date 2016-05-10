@@ -38,29 +38,29 @@ http:
         path: "/user/"
         redirect: "user_dashboard"
         
-    user_dashboard:
-        path: "/user/dashboard.html"
-        controller: "UserWorkController"
+#    user_dashboard:
+#        path: "/user/dashboard.html"
+#        controller: "UserWorkController"
+#        restrictTo:
+#          role: member
+        
+    user_servers:
+        path: "/user/servers.html"
+        controller: "UserServersController"
         restrictTo:
           role: member
         
-    user_projects:
-        path: "/user/projects.html"
-        controller: "UserProjectsController"
-        restrictTo:
-          role: member
-        
-    user_project:
-        path: "/user/project/{id:projectID}.html"
-        controller: "ProjectController"
-        restrictTo:
-          role: member
-        
-    user_project_history:
-        path: "/user/project/{id:projectID}/history.html"
-        controller: "ProjectHistoryController"
-        restrictTo:
-          role: member
+#    user_project:
+#        path: "/user/project/{id:projectID}.html"
+#        controller: "ProjectController"
+#        restrictTo:
+#          role: member
+#        
+#    user_project_history:
+#        path: "/user/project/{id:projectID}/history.html"
+#        controller: "ProjectHistoryController"
+#        restrictTo:
+#          role: member
         
     adm_mysettings:
         path: "/admin/my_settings.html"

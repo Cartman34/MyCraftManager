@@ -24,7 +24,8 @@ $Libraries	= array(
 	'entitydescriptor',
 	'rendering',
 	// Additional
-	'twigrenderer',
+// 	'twigrenderer',
+	'rcon',
 	// Your sources
 	'src',
 );
