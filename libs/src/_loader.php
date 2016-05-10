@@ -11,6 +11,9 @@ addAutoload('UploadedFile',						'src/UploadedFile');
 addAutoload('GlobalConfig',						'src/GlobalConfig');
 addAutoload('User',								'src/User');
 addAutoload('MinecraftServer',					'src/MinecraftServer');
+addAutoload('ServerSoftware',					'src/ServerSoftware');
+
+addAutoload('MinecraftQuery',					'src/MinecraftQuery');
 
 addAutoload('RedirectController',				'src/controllers/RedirectController');
 addAutoload('HomeController',					'src/controllers/HomeController');
@@ -21,7 +24,8 @@ addAutoload('FileDownloadController',			'src/controllers/FileDownloadController'
 addAutoload('AdminController',					'src/controllers/admin/AdminController');
 addAutoload('AdminMySettingsController',		'src/controllers/admin/AdminMySettingsController');
 addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListController');
-addAutoload('AdminUserEditController',			'src/controllers/admin/AdminUserEditController');
+
+addAutoload('AdminServerSoftwaresController',	'src/controllers/admin/AdminServerSoftwaresController');
 
 addAutoload('UserServersController',			'src/controllers/user/UserServersController');
 addAutoload('MinecraftServerController',		'src/controllers/user/MinecraftServerController');
@@ -39,8 +43,6 @@ addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListCon
 addAutoload('AdminConfigController',			'src/controllers/admin/AdminConfigController');
 addAutoload('DevEntitiesController',			'src/controllers/admin/DevEntitiesController');
 
-addAutoload('MinecraftQuery',					'src/MinecraftQuery');
-
 addAutoload('SetupController',					'src/controllers/setup/SetupController');
 addAutoload('StartSetupController',				'src/controllers/setup/StartSetupController');
 addAutoload('CheckFileSystemSetupController',	'src/controllers/setup/CheckFileSystemSetupController');
@@ -56,7 +58,8 @@ defifn('DOMAIN_SETUP',		'setup');
 // Entities
 PermanentEntity::registerEntity('File');
 PermanentEntity::registerEntity('User');
-// PermanentEntity::registerEntity('MinecraftServer');
+PermanentEntity::registerEntity('ServerSoftware');
+PermanentEntity::registerEntity('MinecraftServer');
 
 // Fixtures
 FixtureRepository::register('User');

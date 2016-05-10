@@ -10,81 +10,39 @@ class UserServersController extends AdminController {
 	public function run(HTTPRequest $request) {
 
 		/* @var $USER User */
-		global $USER;
-
-		/* @var $projectUser ProjectUser */
-		/* @var $project Project */
+// 		global $USER;
 		
-// 		$projectDomain	= Project::getDomain();
+		$this->addThisToBreadcrumb();
 		
-// 		if( $request->hasData('submitAddProject') ) {
-		
-// 			try {
-// 				$input 		= $request->getArrayData('project');
-// 				$project	= Project::make($input);
-// // 				$project	= Project::createAndGet($input, array('name', 'slug'));
-// 				reportSuccess(Project::text('successCreate', $project));
-		
-// 			} catch(UserException $e) {
-// // 				if( !empty($imageFile) ) {
-// // 					$imageFile->remove();
-// // 				}
-// 				reportError($e, $projectDomain);
-// 			}
-// 		} else
-// 		if( $request->hasData('submitEditProject') ) {
-		
-// 			try {
-// 				$input 	= $request->getArrayData('project');
-// // 				debug('$input', $input);
-				
-// 				$projectUser = ProjectUser::load($request->getData('projectuser_id'), false);
-// 				if( $projectUser->user_id != $USER->id() ) {
-// 					ProjectUser::throwException('wrongUser');
+		try {
+			if( $request->hasData('submitCreate') ) {
+				$input = $request->getArrayData('server');
+// 				if( isset($input['file_url']) && MinecraftServer::get()->where('file_url', $input['file_url'])->exists() ) {
+// 					MinecraftServer::throwException('existingSoftwareByURL');
 // 				}
-// 				$project	= $projectUser->getProject();
-// 				$project->update($input, array('name'));
-				
-// // 				$imageFile	= File::uploadOne('project_image', $project->name, FILE_USAGE_ITEM);
-// // 				if( $imageFile ) {
-// // 					$project->image_id	= $imageFile->id();
-// // // 					$project->save();
-// // 				}
-// 				reportSuccess(Project::text('successUpdate', $project));
-		
-// 			} catch(UserException $e) {
-// 				reportError($e, $projectDomain);
-// 			}
-// 		} else
-// 		if( $request->hasData('submitDeleteProject') ) {
-		
-// 			try {
-// 				$projectUser = ProjectUser::load($request->getData('projectuser_id'), false);
-// 				if( $projectUser->user_id != $USER->id() ) {
-// 					ProjectUser::throwException('wrongUser');
+				if( empty($input['rcon_password']) ) {
+// 					$gen = new PasswordGenerator();
+					$input['rcon_password'] = (new PasswordGenerator())->generate();
+				}
+// 				if( !empty($input['rcon_password']) ) {
+// 					$input['rcon_password'] = (new PasswordGenerator())->generate();
 // 				}
-
-// 				$project	= $projectUser->getProject();
-// 				if( $project->owner_id != $USER->id() ) {
-// 					ProjectUser::throwException('forbiddenOperation');
+				$server = MinecraftServer::createAndGet($input, array(
+					'name', 'software_id', 'ssh_host', 'ssh_port', 'ssh_user', 'ssh_password', 'path', 'rcon_port', 'rcon_password', 'query_port'
+				));
+// 				$image = File::uploadOne('software_image', $software->getLabel(), FILE_USAGE_SOFTWAREIMAGE, $server);
+// 				if( $image ) {
+// 					$server->image_id = $image->id();
 // 				}
-// // 				$project = Project::load($request->getData('project_id'));
-// 				$project->remove();
-// 				reportSuccess(Project::text('successDelete', $project));
+				reportSuccess(MinecraftServer::text('successCreate', $server));
+// 				$formData = array();
 		
-// 			} catch(UserException $e) {
-// 				reportError($e, $projectDomain);
-// 			}
-// 		}
+			}
+		} catch(UserException $e) {
+			reportError($e);
+		}
 		
-// // 		$USER_CAN_USER_EDIT	= $USER->canUserEdit();
-		
-// // 		$projects	= Project::get()->where('')->orderby('name ASC')->run();
-// 		$projectUsers	= $USER->listProjectUsers();
-		
-		return $this->renderHTML('app/user_servers', array(
-// 			'projectusers'	=> $projectUsers
-		));
+		return $this->renderHTML('app/user_servers');
 	}
 
 }

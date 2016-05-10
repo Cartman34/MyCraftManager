@@ -14,6 +14,7 @@ addAutoload('InvalidFieldException',			'publisher/InvalidFieldException');
 addAutoload('AbstractUser',						'publisher/AbstractUser.php');
 addAutoload('FixtureInterface',					'publisher/Fixture');
 addAutoload('FixtureRepository',				'publisher/Fixture');
+addAutoload('PasswordGenerator',				'publisher/PasswordGenerator');
 
 defifn('CHECK_MODULE_ACCESS',	true);
 // defifn('USER_CLASS',			'User');

@@ -6,7 +6,8 @@
  */
 abstract class SQLRequest {
 	
-	protected $instance;
+	/* @var SQLAdapter $sqlAdapter */
+	protected $sqlAdapter;
 	protected $idField;
 	protected $class;
 	
@@ -17,14 +18,19 @@ abstract class SQLRequest {
 	 */
 	protected $parameters;
 	
-	protected function __construct($instance, $idField, $class=null) {
-		$this->setInstance($instance);
+// 	protected function __construct($sqlAdapter, $idField, $class=null) {
+	protected function __construct($sqlAdapter, $idField, $class=null) {
+		$this->setSQLAdapter($sqlAdapter);
 		$this->setIDField($idField);
 		$this->class	= $class;
 	}
 	
-	public function setInstance($instance) {
-		$this->instance	= $instance;
+	public function getSQLAdapter() {
+		return $this->sqlAdapter;
+	}
+	
+	public function setSQLAdapter($sqlAdapter) {
+		$this->sqlAdapter	= $sqlAdapter;
 	}
 	
 	public function setIDField($idField) {
@@ -73,13 +79,21 @@ abstract class SQLRequest {
 	
 	protected abstract function run();
 	
+	public function escapeIdentifier($identifier) {
+		return $this->sqlAdapter->escapeIdentifier($identifier);
+	}
+	
+	public function escapeValue($value) {
+		return $this->sqlAdapter->escapeValue($value);
+	}
+	
 	/**
 	 * 
-	 * @param string $instance
+	 * @param string $sqlAdapter
 	 * @param string $idField
 	 * @return SQLSelectRequest
 	 */
-	public static function select($instance=null, $idField='id', $class=null) {
-		return new SQLSelectRequest($instance, $idField, $class);
+	public static function select($sqlAdapter=null, $idField='id', $class=null) {
+		return new SQLSelectRequest($sqlAdapter, $idField, $class);
 	}
 }

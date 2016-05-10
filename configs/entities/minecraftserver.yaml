@@ -1,5 +1,5 @@
 
-# Project descriptor
+# Minecraft Server descriptor
 
 fields:
     create_date:        datetime=sqlDatetime()
@@ -7,17 +7,22 @@ fields:
     create_user_id:     ref(user)=userID()
     owner_id:           ref(user)=userID()
     
-    slug:               string(3, 50)
+    slug:               slug(name)
     name:               string(3, 50)
     software_id:        ref(serversoftware)
+    path:               string
     ssh_host:           string(100)
     ssh_port:           natural(65535)[nullable]    # SSH Port, default is 22
     ssh_user:           string(50)
     ssh_password:       string(100)
     rcon_port:          natural(65535)[nullable]    # RCON Port, default is 25575
     rcon_password:      string(100)[nullable]
+    query_port:         natural(65535)[nullable]    # RCON Port, default is 25575
     
     pid:                string(10)[nullable]
+    install_date:       datetime[nullable]
+    start_date:         datetime[nullable]
+    isonline:           boolean=false               # Successful connect to server, may be started and not online if error
 
 indexes:
      - INDEX(owner_id)

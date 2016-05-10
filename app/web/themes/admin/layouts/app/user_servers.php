@@ -11,10 +11,10 @@ HTMLRendering::useLayout('page_skeleton');
 // 	$serverGifts[$gift->server_id][] = $gift;
 // }
 
-$query = new MinecraftQuery('10.0.1.5');
-$query->collectInformations();
-debug('Infos', $query->getInfo());
-debug('Players', $query->getPlayers());
+// $query = new MinecraftQuery('10.0.1.5');
+// $query->collectInformations();
+// debug('Infos', $query->getInfo());
+// debug('Players', $query->getPlayers());
 
 // $rcon = new Rcon('10.0.1.5', 25575, 'dsdsdq');
 // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
@@ -93,29 +93,55 @@ foreach( $serverusers as $serverUser ) {
 				Gérez vos projets, enregistrez les ici !
 				</p>
 				<div class="form-group">
-					<label for="inputMinecraftServerName">Nom</label>
-					<input name="server[name]" type="text" class="form-control" id="inputMinecraftServerName" required>
+					<label for="NewMinecraftServerName">Nom</label>
+					<input name="server[name]" type="text" class="form-control" id="NewMinecraftServerName" required>
 				</div>
-<!-- 				<div class="form-group"> -->
-<!-- 					<label for="inputMinecraftServerPrice">Prix (€)</label> -->
-<!-- 					<input name="server[price]" type="text" class="form-control" id="inputMinecraftServerPrice" placeholder="Non communiqué"> -->
-<!-- 					<p class="help-block"> -->
-<!-- 					Si vous définissez un prix à cet article, le donateur aura la possibilité d'indiquer une participation. -->
-<!-- 					</p> -->
-<!-- 				</div> -->
-<!-- 				<div class="form-group"> -->
-<!-- 					<label for="inputMinecraftServerImage">Image</label> -->
-<!-- 					<input name="server_image" type="file" class="form-control" id="inputMinecraftServerImage" required> -->
-<!-- 				</div> -->
-<!-- 				<div class="form-group"> -->
-<!-- 					<label for="inputMinecraftServerShopUrl">Lien marchand</label> -->
-<!-- 					<input name="server[shop_url]" type="text" class="form-control" id="inputMinecraftServerShopUrl"> -->
-<!-- 					<p class="help-block">Vous pouvez le trouver sur <a href="http://www.amazon.fr/" target="_blank">Amazon.fr</a>.</p> -->
-<!-- 				</div> -->
-<!-- 				<div class="form-group"> -->
-<!-- 					<label for="inputMinecraftServerNote">Note</label> -->
-<!-- 					<textarea name="server[note]" rows="3" type="text" class="form-control" id="inputMinecraftServerNote"></textarea> -->
-<!-- 				</div> -->
+				<div class="form-group">
+					<label for="NewMinecraftServerSoftware">Application</label>
+					<select name="server[software_id]" class="select form-control" id="NewMinecraftServerSoftware" required>
+						<?php _htmlOptions('server/software_id', ServerSoftware::listByName()->run(), null, OPT_PERMANENTOBJECT); ?>
+					</select>
+				</div>
+				<div class="row">
+					<div class="col-sm-8 form-group">
+						<label for="NewMinecraftServerSSHHost">Serveur SSH</label>
+						<input name="server[ssh_host]" type="text" class="form-control" id="NewMinecraftServerSSHHost" required>
+					</div>
+					<div class="col-sm-4 form-group">
+						<label for="NewMinecraftServerSSHPort">Port SSH</label>
+						<input name="server[ssh_port]" type="text" class="form-control" id="NewMinecraftServerSSHPort" placeholder="22">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-8 form-group">
+						<label for="NewMinecraftServerSSHUser">Utilisateur SSH</label>
+						<input name="server[ssh_user]" type="text" class="form-control" id="NewMinecraftServerSSHUser" required>
+					</div>
+					<div class="col-sm-4 form-group">
+						<label for="NewMinecraftServerSSHPassword">Mot de passe SSH</label>
+						<input name="server[ssh_password]" type="password" class="form-control" id="NewMinecraftServerSSHPassword">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="NewMinecraftServerPath">Chemin sur le serveur</label>
+					<input name="server[path]" type="text" class="form-control" id="NewMinecraftServerPath" placeholder="Chemin vers le dossier où installer l'application">
+				</div>
+				<div class="row">
+					<div class="col-sm-8 form-group">
+						<label for="NewMinecraftServerRconPassword">Mot de passe Rcon</label>
+						<input name="server[rcon_password]" type="password" class="form-control" id="NewMinecraftServerRconPassword" placeholder="Automatique">
+					</div>
+					<div class="col-sm-4 form-group">
+						<label for="NewMinecraftServerRconPort">Port Rcon</label>
+						<input name="server[rcon_port]" type="text" class="form-control" id="NewMinecraftServerRconPort" placeholder="25575">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 form-group">
+						<label for="NewMinecraftServerQueryPort">Port Query</label>
+						<input name="server[query_port]" type="text" class="form-control" id="NewMinecraftServerQueryPort" placeholder="25565">
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

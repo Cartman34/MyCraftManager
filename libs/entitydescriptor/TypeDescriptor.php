@@ -59,23 +59,40 @@ abstract class TypeDescriptor {
 	
 	/**
 	 * Parse args from field declaration
-	 * @param $args string[] Arguments
+	 * @param string[] $args Arguments
 	 * @return stdClass
 	 */
-	public function parseArgs($args) {
+	public function parseArgs(array $args) {
 		return new stdClass();
 	}
-	
-	public function validate($Field, &$value, $inputData, &$ref) {}
+
+	/**
+	 * Validate value
+	 *
+	 * @param FieldDescriptor $field The field to validate
+	 * @param string $value The field value to validate
+	 * @param array $input The input to validate
+	 * @param PermanentEntity $ref The object to update, may be null
+	 */
+	public function validate(FieldDescriptor $field, &$value, $input, &$ref) {}
 	
 	/**
-	 * Use formatValue()
+	 * Format value before being validated
+	 * 
+	 * @param FieldDescriptor $field The field to format
+	 * @param string $value The field value to format
+	 * @param array $input The input to validate
+	 * @param PermanentEntity $ref The object to update, may be null
+	 */
+	public function preFormat(FieldDescriptor $field, &$value, $input, &$ref) {}
+	
+	/**
+	 * Format value after being validated
 	 * 
 	 * @param FieldDescriptor $field The field to parse
 	 * @param string $value The field value to parse
-	 * @deprecated Use formatValue()
 	 */
-	public function format($Field, &$value) {}
+	public function format(FieldDescriptor $field, &$value) {}
 
 
 	/**

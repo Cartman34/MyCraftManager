@@ -21,9 +21,9 @@ abstract class AdminController extends HTTPController {
 		HTMLRendering::setDefaultTheme('admin');
 		
 		$this->addBreadcrumb(t('home'), u(DEFAULTMEMBERROUTE));
-		if( DEFAULTMEMBERROUTE !== $this->getRouteName() ) {
-			$this->addRouteToBreadcrumb(DEFAULTMEMBERROUTE);
-		}
+// 		if( DEFAULTMEMBERROUTE !== $this->getRouteName() ) {
+// 			$this->addRouteToBreadcrumb(DEFAULTMEMBERROUTE);
+// 		}
 		
 		/* @var $USER User */
 // 		if( CHECK_MODULE_ACCESS ) {

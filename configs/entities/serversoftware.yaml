@@ -1,23 +1,22 @@
 
-# Project descriptor
+# Server Software descriptor
 
 fields:
     create_date:        datetime=sqlDatetime()
     create_ip:          ip=clientIP()
     create_user_id:     ref(user)=userID()
-    owner_id:           ref(user)=userID()
     
-    slug:               string(3, 50)
+    slug:               slug(name)
     name:               string(2, 100)
     version:            string(1, 20)[nullable]
     file_url:           url
 #    file_id:            ref(file)=0
     image_id:           ref(file)=0
-    install_path:       string(2, 100)[nullable]
-    start_path:         string(2, 100)
+    published:          boolean=false
+    installer_path:     string(2, 100)[nullable]
+    starter_path:       string(2, 100)
 
 indexes:
-     - INDEX(owner_id)
      - INDEX(slug)
      - FULLTEXT(name)
      

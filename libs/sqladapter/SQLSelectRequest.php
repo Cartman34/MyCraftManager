@@ -21,13 +21,20 @@ class SQLSelectRequest extends SQLRequest {
 		return $this->sget('what', $this->get('what', '*').','.$field);
 	}
 
-	public function having($condition=null) {
+	public function having($condition) {
 		$having		= $this->get('having', array());
 		$having[]	= $condition;
 		return $this->sget('having', $having);
 	}
 
-	public function where($condition=null) {
+	public function where($condition, $equality=null, $value=null) {
+		if( $equality ) {
+			if( !$value ) {
+				$value		= $equality;
+				$equality	= '=';
+			}
+			$condition = $this->escapeIdentifier($condition).' '.$equality.' '.$this->escapeValue($value);
+		}
 		$where		= $this->get('where', array());
 		$where[]	= $condition;
 		return $this->sget('where', $where);
@@ -150,7 +157,8 @@ class SQLSelectRequest extends SQLRequest {
 // 			$options['what'] = '*';// Could be * or something derived for order e.g
 			$objects	= 1;
 		}
-		$r	= SQLAdapter::doSelect($options, $this->instance, $this->idField);
+// 		$r	= SQLAdapter::doSelect($options, $this->instance, $this->idField);
+		$r = $this->sqlAdapter->select($options);
 		if( is_object($r) ) {
 			return $r;
 		}

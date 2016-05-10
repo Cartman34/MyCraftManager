@@ -46,7 +46,7 @@ if( !empty($resultingSQL) ) {
 			<button type="submit" class="btn btn-primary" name="submitGenerateSQL[<?php echo OUTPUT_APPLY; ?>]"><?php _t('apply'); ?></button>
 		</form>
 		<?php
-		HTMLRendering::endCurrentLayout(array('title'=>t('generated_sqlqueries', DOMAIN_SETUP), 'actions'=>PANEL_ALL));
+		HTMLRendering::endCurrentLayout(array('title'=>t('generated_sqlqueries', DOMAIN_SETUP)));
 		?>
 	</div>
 <?php
@@ -58,7 +58,6 @@ if( !empty($resultingSQL) ) {
 	<div class="col-lg-6">
 		<form method="POST" role="form" class="form-horizontal"><?php echo $FORM_TOKEN; ?>
 		<?php HTMLRendering::useLayout('panel-default'); ?>
-<!-- 		<h2>Entities found</h2> -->
 		<button class="btn btn-info btn-sm" type="button" onclick="$('.entitycb').prop('checked', true);"><i class="fa fa-fw fa-check-square-o"></i> <?php _t('checkall'); ?></button>
 		<button class="btn btn-info btn-sm" type="button" onclick="$('.entitycb').prop('checked', false);"><i class="fa fa-fw fa-square-o"></i> <?php _t('uncheckall'); ?></button>
 		
@@ -79,7 +78,7 @@ if( !empty($resultingSQL) ) {
 		<div class="form-group">
 			<label class="col-sm-4 control-label">SQL</label>
 			<div class="col-sm-3">
-				<button type="submit" class="btn btn-success" name="submitGenerateSQL[<?php echo OUTPUT_DISPLAY; ?>]">Generate</button>
+				<button type="submit" class="btn btn-primary" name="submitGenerateSQL[<?php echo OUTPUT_DISPLAY; ?>]">Generate</button>
 			</div>
 		</div>
 		
@@ -91,7 +90,7 @@ if( !empty($resultingSQL) ) {
 					<option value="<?php echo OUTPUT_DLRAW; ?>">Download (TXT)</option>
 				</select>
 			</div>
-			<button type="submit" class="btn btn-success" name="submitGenerateVE">Generate</button>
+			<button type="submit" class="btn btn-primary" name="submitGenerateVE">Generate</button>
 		</div>
 		
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Toutes les entités')); ?>

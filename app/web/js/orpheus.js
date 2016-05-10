@@ -639,7 +639,7 @@ var escapeHTML;
 		$("input.autocomplete.auto").shown(function() {
 			if( $(this).data("autocomplete-auto") ) { return; }
 			$(this).data("autocomplete-auto", 1);
-			var _	= $(this);
+			var _ = $(this);
 			_.autocomplete({
 				minLength:	2,
 				source:		function(request, response) {
@@ -650,11 +650,13 @@ var escapeHTML;
 			});
 		});
 		
-		$('input[type=url]').change(function() {
+		$('input[type=url]').watch(function() {
 			var value = $(this).val();
 			if( value.length && value.indexOf("://") < 0 ) {
-				$(this).val("http://"+value);
+				$(this).val(value="http://"+value);
 			}
+//			console.log("Changed url", $(this).data("linkbtn") || $(this).next("a"));
+			$($(this).data("linkbtn") || $(this).next("a")).attr("href", value);
 		});
 	});
 })(jQuery);

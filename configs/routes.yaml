@@ -50,6 +50,12 @@ http:
         restrictTo:
           role: member
         
+    adm_serversoftwares:
+        path: "/admin/server-softwares.html"
+        controller: "AdminServerSoftwaresController"
+        restrictTo:
+          role: administrator
+        
 #    user_project:
 #        path: "/user/project/{id:projectID}.html"
 #        controller: "ProjectController"

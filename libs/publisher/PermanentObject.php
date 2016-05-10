@@ -693,10 +693,12 @@ abstract class PermanentObject {
 		if( $options === NULL ) {
 // 			debug('SQLRequest from '.static::getClass().', table = '.static::$table);
 // 			debug('DB Instance', static::$DBInstance);
-			return SQLRequest::select(static::$DBInstance, static::$IDFIELD, static::getClass())->from(static::$table)->asObjectList();
+			return SQLRequest::select(static::getSQLAdapter(), static::$IDFIELD, static::getClass())->from(static::$table)->asObjectList();
+// 			return SQLRequest::select(static::$DBInstance, static::$IDFIELD, static::getClass())->from(static::$table)->asObjectList();
 		}
 		if( $options instanceof SQLSelectRequest ) {
-			$options->setInstance(static::$DBInstance);
+			$options->setSQLAdapter(static::getSQLAdapter());
+// 			$options->setInstance(static::$DBInstance);
 			$options->setIDField(static::$IDFIELD);
 			$options->from(static::$table);
 			return $options->run();
@@ -925,7 +927,9 @@ abstract class PermanentObject {
 	 * @see static::ei()
 	*/
 	public static function escapeIdentifier($identifier=null) {
-		return SQLAdapter::doEscapeIdentifier($identifier ? $identifier : static::$table, static::$DBInstance);
+		$sqlAdapter = static::getSQLAdapter();
+		return $sqlAdapter->escapeIdentifier($identifier);
+// 		return SQLAdapter::doEscapeIdentifier($identifier ? $identifier : static::$table, static::$DBInstance);
 	}
 	/** Escape identifier through instance
 	 * @param	string $Identifier The identifier to escape. Default is table name.
@@ -969,7 +973,9 @@ abstract class PermanentObject {
 	 * @see SQLAdapter::formatValue()
 	*/
 	public static function formatValue($value) {
-		return SQLAdapter::doFormatValue($value, static::$DBInstance);
+		$sqlAdapter = static::getSQLAdapter();
+		return $sqlAdapter->formatValue($value);
+// 		return SQLAdapter::doFormatValue($value, static::$DBInstance);
 	}
 	/**
 	 * Escape value through instance
@@ -1343,6 +1349,9 @@ abstract class PermanentObject {
 		return $classData;
 	}
 	
+	/**
+	 * @return SQLAdapter
+	 */
 	public static function getSQLAdapter() {
 // 		$classData = static::getClassData();
 		static::getClassData($classData);

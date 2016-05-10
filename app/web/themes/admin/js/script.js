@@ -2,7 +2,7 @@
 (function($) {
 $(function() {
 
-	if( moment ) {
+	if( typeof moment !== "undefined" ) {
 //		console.log("Set moment locale to "+$('html').attr("lang"));
 		moment.locale($('html').attr("lang"));
 	}

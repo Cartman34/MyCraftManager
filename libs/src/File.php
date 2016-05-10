@@ -169,7 +169,8 @@ class File extends PermanentEntity {
 	 * @return	boolean|File The File object or false if there is no valid upload
 	 */
 	public static function uploadOne($inputName, $label, $usage, $parent=0) {
-		if( !in_array($usage, static::getUsageNames()) ) {
+// 		if( !in_array($usage, static::getUsageNames()) ) {
+		if( !in_array($usage, getFileUsages()) ) {
 			static::throwException('invalidUsage');
 		}
 		if( is_string($inputName) ) {
@@ -233,6 +234,9 @@ class File extends PermanentEntity {
 	}
 	
 	public static function importFromURL(array $input, $url) {
+		if( empty($input['source_type']) ) {
+			$input['source_type'] = FILE_SOURCETYPE_USERURL;
+		}
 		return static::import($input, $url, self::MODE_COPY);
 	}
 

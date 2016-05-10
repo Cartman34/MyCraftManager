@@ -72,3 +72,16 @@ define('CRAC_CONTEXT_APPLICATION',	1);
 define('CRAC_CONTEXT_AGENCY',		2);
 define('CRAC_CONTEXT_RESOURCE',		3);
 
+define('FILE_USAGE_SOFTWAREIMAGE',	'server-software-image');
+
+function getFileUsages() {
+	return array(FILE_USAGE_SOFTWAREIMAGE);
+}
+
+define('FILE_SOURCETYPE_UPLOAD',	'upload');
+define('FILE_SOURCETYPE_DATAURI',	'datauri');
+define('FILE_SOURCETYPE_USERURL',	'user-url');
+
+function getFileSourceTypes() {
+	return array(FILE_SOURCETYPE_UPLOAD, FILE_SOURCETYPE_DATAURI);
+}

@@ -221,7 +221,7 @@ abstract class SQLAdapter {
 	/**
 	 * Escape SQL identifiers
 	 * 
-	 * @param $Identifier The identifier to escape.
+	 * @param string $Identifier The identifier to escape.
 	 * @return The escaped identifier.
 	 * 
 	 * Escapes the given string as an SQL identifier.
@@ -250,9 +250,20 @@ abstract class SQLAdapter {
 	 * If null, we use the NULL value, else we consider it as a string value.
 	 */
 	public function formatValue($value) {
-// 		if( is_float($value) ) {
-// 			return strtr($value, ',', '.');
-// 		}
+		return $this->escapeValue($value);
+	}
+
+	/**
+	 * Escape SQL value
+	 * @param string $value The value to format.
+	 * @return The formatted value.
+	 * @see formatValue()
+	 * 
+	 * Formats the given value to the matching SQL type.
+	 * If the value is a float, we make french decimal compatible with SQL.
+	 * If null, we use the NULL value, else we consider it as a string value.
+	 */
+	public function escapeValue($value) {
 		return $value === null ? 'NULL' : $this->formatString($value);
 	}
 	
