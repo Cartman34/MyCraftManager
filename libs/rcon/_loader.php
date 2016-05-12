@@ -7,3 +7,4 @@
  */
  
 addAutoload('Rcon',					'rcon/Rcon');
+addAutoload('RconBasic',			'rcon/RconBasic');

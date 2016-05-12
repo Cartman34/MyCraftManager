@@ -13,8 +13,8 @@
  * @property string $version
  * @property string $file_url
  * @property integer $image_id
- * @property string $install_path
- * @property string $start_path
+ * @property string $installer_path
+ * @property string $starter_path
  */
 class ServerSoftware extends PermanentEntity {
 	/*

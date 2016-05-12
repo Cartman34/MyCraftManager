@@ -88,7 +88,7 @@ class Rcon {
 	public function __construct($host, $port, $password=null, $connectionTimeout = 5, $timeoutSecs = 0, $timeoutUsecs = 5000) {
 		$this->setHost($host);
 // 		$this->setPort($port);
-		$this->setPort(25565);
+		$this->setPort($port);
 		$this->setPassword($password);
 		$this->setConnectionTimeout($connectionTimeout);
 		$this->setTimeout($timeoutSecs, $timeoutUsecs, false);
@@ -120,7 +120,7 @@ class Rcon {
 		$connection = fsockopen($this->host, $this->port, $errNo, $errStr, $this->connectionTimeout);
 // 		debug("fsockopen(".$this->host.", ".$this->port.", ".$errNo.", ".$errStr.", ".$this->connectionTimeout.")");
 // 		$this->connection = @fsockopen($this->host, $this->port, $errNo, $errStr, $this->connectionTimeout);
-// 		debug('Socket');
+// 		debug('Connection');
 // 		var_dump($this->connection); echo '<br />';
 
 		if( !is_resource($connection) ) {
@@ -132,10 +132,12 @@ class Rcon {
 		$this->connection = $connection;
 
 		try {
+// 			debug('password => '.$this->password);
 			$ret = $this->send(self::PACKET_AUTH, $this->password);
-	// 		debug('Auth recv packet', $ret);
+// 			debug('Auth recv packet', $ret);
 		} catch( Exception $e ) {
 			$this->disconnect();
+			throw $e;
 			return false;
 		}
 		
@@ -203,6 +205,9 @@ class Rcon {
 
 // 		debug("Write data ");
 // 		debug("Write data ".strlen($data));
+// 		debug("Send packet to ", $this->connection);
+// 		debug("Data ", $data);
+// 		debug("length ", strlen($data));
 		$result = fwrite($this->connection, $data, strlen($data));
 // 		$result = @fwrite($this->connection, $data, strlen($data));
 // 		var_dump($result);echo '<br>';
@@ -229,13 +234,17 @@ class Rcon {
 		$type = null;
 		$body = null;
 
+		$c = 0;
 		// Read the size (4 bytes = 32-bit integer)
 		while( $size = fread($this->connection, 4) ) {
+			$c++;
 // 		while( $size = @fread($this->connection, 4) ) {
 
 			$size = unpack('V1size', $size);
+// 			debug('$size', $size);
 
 			$bytes = fread($this->connection, $size["size"]);
+// 			debug('$bytes => '.$size);
 // 			$bytes = @fread($this->connection, $size["size"]);
 
 			if( $bytes === false ) {
@@ -262,6 +271,12 @@ class Rcon {
 				break;
 			}
 		}
+// 		debug('$size', $size);
+// 		debug('$c => '.$c);
+
+// 		if( !$c ) {
+// 			throw new RuntimeException("Not a RCON server");
+// 		}
 
 		return array(
 			'id'	=>  $id,

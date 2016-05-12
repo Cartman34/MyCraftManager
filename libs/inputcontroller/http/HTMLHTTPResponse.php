@@ -38,7 +38,9 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @see HTTPResponse::run()
 	 */
 	public function run() {
-		header('Content-Type: text/html; charset="UTF-8"');
+		if( !headers_sent() ) {
+			header('Content-Type: text/html; charset="UTF-8"');
+		}
 		if( $this->body ) {
 			// if already generated we display the body
 			die($this->getBody());

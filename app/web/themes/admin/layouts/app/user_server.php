@@ -14,12 +14,22 @@ $isInstalled	= $server->isInstalled();
 $isOnline		= $isInstalled && $server->isOnline();
 $formData		= array('server'=>$server->all);
 $software		= $server->getServerSoftware();
-// debug('$server', $server);
-// debug('$formData', $formData);
 
-// debug('date => '.date('r.u'));
-// debug('DateTime => '.(new DateTime())->format('r.u'));
-// debug('DateTime => '.microtime(true));
+// $command = 'list';
+
+// $rcon = new RconBasic('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
+// // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
+// $rcon->connect();
+// debug('Send command "'.$command.'"');
+// debug('=> '.$rcon->command($command));
+
+// $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
+// // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
+// // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
+// $rcon->connect();
+// debug('Send command "'.$command.'"');
+// debug('=> '.$rcon->command($command));
+
 ?>
 
 <?php
@@ -178,6 +188,7 @@ if( !$isInstalled ) {
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Console')); ?>
 	</div>
 <script type="text/javascript">
+//*
 $(function() {
 	//https://developer.mozilla.org/fr/docs/Server-sent_events/Using_server-sent_events
 // 	$(".consolestream")
@@ -245,8 +256,17 @@ $(function() {
 		if( command.length < 2 ) {
 			return;
 		}
-		consoleInput.prop("disabled", true);
+// 		consoleInput.prop("disabled", true);
 		console.log("Send command => "+command);
+		$.post("http://flo.mcm.sowapps.com/user/server/8/console.json", {"command":command}, function(data) {
+// 			console.log("Command success", data);
+			$(".rcon_alert").remove();
+			if( !data ) {
+				return;
+			}
+			console.log("data.length => "+data.length);
+			consoleInput.parent().after('<div class="rcon_alert alert alert-info mt20 mb0" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'+data+'</div>');
+		});
 	});
 // 	source.onmessage = function (e) {
 // 		console.log("Message", e);
@@ -254,6 +274,7 @@ $(function() {
 // 		// handle message
 // 	};
 });
+//* /
 </script>
 <style>
 .consolestream {
@@ -262,6 +283,7 @@ $(function() {
 }
 .consolestream .list-group-item {
 	padding: 4px 8px;
+	border: none;
 }
 </style>
 

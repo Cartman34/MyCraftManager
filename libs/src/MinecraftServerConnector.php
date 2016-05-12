@@ -11,25 +11,61 @@ class MinecraftServerConnector {
 	protected $rcon;
 	/* @var MinecraftQuery $query */
 	protected $query;
+	protected $path;
+	protected $startPath;
+	protected $installPath;
 	
-	public function __construct($ssh, $rco, $query) {
+	public function __construct($ssh, $rcon, $query, $path, $startPath, $installPath) {
 		$this->setSSH($ssh);
+		$this->setRcon($rcon);
+		$this->setQuery($query);
+		$this->setPath($path);
+		$this->setStartPath($startPath);
+		$this->setInstallPath($installPath);
 	}
 	
 	// Connector
 	
+	public function disconnect() {
+		$this->ssh->disconnect();
+		$this->rcon->disconnect();
+		$this->query->disconnect();
+	}
+	
 	public function start() {
-		if( $this->testIsStarted() ) {
+		if( $this->isStarted() ) {
 			throw new UserException('applicationAlreadyStarted');
 		}
 	}
 	
-	public function testIsAvailable() {
-		return $this->testSSH();
+	/* *** Server *** */
+	
+	public function getLogsStream() {
+		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
+// 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log | grep -v "RCON Listener"');
+// 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
+// 		$stream = ssh2_exec($connection, 'tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
+		stream_set_blocking($stream, false);
+		return $stream;
 	}
 	
-	public function testIsStarted() {
-		return $this->testRcon();
+	public function exec($command, &$output=null, &$error=null) {
+		if( !$this->isAvailable() ) {
+			throw new UserException('requireServerAvailable');
+		}
+		$this->getSSH()->exec($cmd, $output, $error);
+	}
+	
+	protected $available;
+	public function isAvailable() {
+		if( $this->available === null ) {
+			$this->testIsAvailable();
+		}
+		return $this->available;
+	}
+	
+	public function testIsAvailable() {
+		return $this->available = $this->testSSH();
 	}
 	
 	public function testSSH() {
@@ -43,6 +79,27 @@ class MinecraftServerConnector {
 		return $ok;
 	}
 	
+	/* *** Application *** */
+	public function sendCommand($command) {
+		if( !$this->isStarted() ) {
+			throw new UserException('requireApplicationStarted');
+		}
+// 		debug('RCON', $this->getRcon());
+		return $this->getRcon()->command($command);
+	}
+	
+	protected $started;
+	public function isStarted() {
+		if( $this->started === null ) {
+			$this->testIsStarted();
+		}
+		return $this->started;
+	}
+	
+	public function testIsStarted() {
+		return $this->started = $this->testRcon();
+	}
+	
 	public function testRcon() {
 		$ok		= false;
 		try {
@@ -51,19 +108,6 @@ class MinecraftServerConnector {
 		} catch( Exception $e ) {
 // 			 debug('testRcon() - Exception - '.$e->getMessage(), $e);
 		}
-		return $ok;
-	}
-	
-	public function testRcon() {
-		$rcon	= $this->getRcon();
-		$ok		= false;
-		try {
-			$rcon->connect();
-			$ok = true;
-		} catch( Exception $e ) {
-// 			 debug('testRcon() - Exception - '.$e->getMessage(), $e);
-		}
-		$this->isonline = $ok;
 		return $ok;
 	}
 	
@@ -91,4 +135,28 @@ class MinecraftServerConnector {
 		$this->query = $query;
 		return $this;
 	}
+	public function getStartPath() {
+		return $this->startPath;
+	}
+	public function setStartPath($startPath) {
+		$this->startPath = $startPath;
+		return $this;
+	}
+	public function getInstallPath() {
+		return $this->installPath;
+	}
+	public function setInstallPath($installPath) {
+		$this->installPath = $installPath;
+		return $this;
+	}
+	public function getPath() {
+		return $this->path;
+	}
+	public function setPath($path) {
+		$this->path = $path;
+		return $this;
+	}
+	
+	
+	
 }

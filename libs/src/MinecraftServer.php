@@ -11,6 +11,7 @@
  * @property string $slug
  * @property string $name
  * @property ineger $software_id
+ * @property string $path
  * @property string $ssh_host
  * @property ineger $ssh_port
  * @property string $ssh_user
@@ -37,6 +38,17 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		return escapeText($this->name);
 	}
 
+	/**
+	 * @return MinecraftServerConnector
+	 */
+	public function getConnector() {
+		$software = $this->getServerSoftware();
+		return new MinecraftServerConnector($this->getSSH(), $this->getRcon(), $this->getMCQuery(), $this->path, $software->starter_path, $software->installer_path);
+	}
+
+	/**
+	 * @return ServerSoftware
+	 */
 	public function getServerSoftware() {
 		return ServerSoftware::load($this->software_id);
 	}
@@ -127,6 +139,9 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		if( !$this->ssh ) {
 // 			debug('MinecraftServer', $this);
 			$this->ssh = new SSH2($this->ssh_host, $this->ssh_port ? $this->ssh_port : 22, $this->ssh_fingerprint);
+			if( $this->ssh_user ) {
+				$this->ssh->setCertificateAuthentication($this->ssh_user, $this->getPrivateKeyPath(), $this->getPublicKeyPath());
+			}
 		}
 		return $this->ssh;
 	}
@@ -147,7 +162,6 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function getConnectedSSH() {
 		$ssh = $this->getSSH();
 		if( !$ssh->isConnected() ) {
-			$ssh->setCertificateAuthentication($this->ssh_user, $this->getPrivateKeyPath(), $this->getPublicKeyPath());
 			$ssh->connect();
 		}
 		return $ssh;

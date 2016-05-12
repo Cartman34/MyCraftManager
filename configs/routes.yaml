@@ -62,9 +62,17 @@ http:
         restrictTo:
           role: member
         
-    adm_server_console:
+    adm_server_console_stream:
         path: "/user/server/{id:serverID}/console.html"
+        method: GET
         controller: "MinecraftServerConsoleStreamController"
+        restrictTo:
+          role: member
+        
+    adm_server_console_input:
+        path: "/user/server/{id:serverID}/console.json"
+        method: POST
+        controller: "MinecraftServerConsoleInputController"
         restrictTo:
           role: member
         

@@ -40,6 +40,7 @@ class HTTPRequest extends InputRequest {
 	 * @return Route
 	 */
 	public function findFirstMatchingRoute($alternative=false) {
+// 		debug('$this', $this);
 // 		debug('Routes', $this->getRoutes());
 		foreach( $this->getRoutes() as $methodRoutes ) {
 			if( !isset($methodRoutes[$this->method]) ) { continue; }

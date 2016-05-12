@@ -10,6 +10,7 @@ addAutoload('UploadedFile',						'src/UploadedFile');
 
 addAutoload('GlobalConfig',						'src/GlobalConfig');
 addAutoload('User',								'src/User');
+addAutoload('MinecraftServerConnector',			'src/MinecraftServerConnector');
 addAutoload('MinecraftServer',					'src/MinecraftServer');
 addAutoload('ServerSoftware',					'src/ServerSoftware');
 
@@ -29,6 +30,7 @@ addAutoload('AdminServerSoftwaresController',	'src/controllers/admin/AdminServer
 addAutoload('UserServersController',			'src/controllers/user/UserServersController');
 addAutoload('MinecraftServerController',		'src/controllers/user/MinecraftServerController');
 addAutoload('MinecraftServerConsoleStreamController',	'src/controllers/user/MinecraftServerConsoleStreamController');
+addAutoload('MinecraftServerConsoleInputController',	'src/controllers/user/MinecraftServerConsoleInputController');
 
 addAutoload('FileDownloadController',			'src/controllers/FileDownloadController');
 addAutoload('HomeController',					'src/controllers/HomeController');

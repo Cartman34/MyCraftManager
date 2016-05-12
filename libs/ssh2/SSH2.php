@@ -55,6 +55,7 @@ class SSH2 {
 			}
 		}
 		$authenticated = false;
+// 		debug('SSH2', $this);
 		if( $this->privateKeyPath && ssh2_auth_pubkey_file($connection, $this->username, $this->publicKeyPath, $this->privateKeyPath, $this->passphrase) ) {
 			$authenticated = true;
 		} else
@@ -65,21 +66,33 @@ class SSH2 {
 			$this->connection = $connection;
 			return true;
 		}
+		throw new Exception('Failed to authenticate');
 // 		if (!ssh2_auth_pubkey_file($this->connection, $this->ssh_auth_user, $this->ssh_auth_pub, $this->ssh_auth_priv, $this->ssh_auth_pass)) {
 // 			throw new Exception('Autentication rejected by server');
 // 		}
-		return false;
+// 		return false;
 	}
 
-	public function exec($cmd, &$output=null, &$error=null) {
-		// http://php.net/manual/en/function.ssh2-exec.php
+	public function execRaw($cmd) {
 		if( !$this->isConnected() ) {
+// 			debug('not connected');
 			$this->connect();
 		}
+		// http://php.net/manual/en/function.ssh2-exec.php
 		$stream = ssh2_exec($this->connection, $cmd);
 		if( $stream === false ) {
 			throw new Exception('SSH command failed');
 		}
+		return $stream;
+	}
+	
+	public function exec($cmd, &$output=null, &$error=null) {
+// 		if( !$this->isConnected() ) {
+// 			$this->connect();
+// 		}
+// 		$stream = ssh2_exec($this->connection, $cmd);
+		$stream = $this->execRaw($cmd);
+		
 		$errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
 		$outputStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
 		

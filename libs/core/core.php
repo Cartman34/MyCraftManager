@@ -117,8 +117,11 @@ function sendRESTfulJSON($data, $code=null) {
 			/* @var $data UserReportsException */
 			sendResponse($data->getMessage(), $data->getReports(), $data->getDomain());
 		} else
-		if( $data instanceof Exception ) {
+		if( $data instanceof UserException ) {
 			sendResponse($data->getMessage(), '', $data->getDomain());
+		} else
+		if( $data instanceof Exception ) {
+			sendResponse($data->getMessage());
 		} else {
 // 			if( is_string($data) ) {
 // 			}

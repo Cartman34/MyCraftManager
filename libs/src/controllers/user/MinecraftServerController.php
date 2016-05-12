@@ -25,9 +25,9 @@ class MinecraftServerController extends AdminController {
 		
 		$this->addThisToBreadcrumb($server.'');
 		
-		if( !$user->canServerManage(CRAC_CONTEXT_APPLICATION, $server) ) {
-			MinecraftServer::throwNotFound();
-		}
+// 		if( !$user->canServerManage(CRAC_CONTEXT_APPLICATION, $server) ) {
+// 			MinecraftServer::throwNotFound();
+// 		}
 		
 		try {
 			if( $request->hasData('submitUpdateServer') ) {
