@@ -80,6 +80,15 @@ class MinecraftServerConnector {
 	}
 	
 	/* *** Application *** */
+	
+	public function listPlayers() {
+		return $this->getQuery()->listPlayers();
+	}
+	
+	public function getInfos() {
+		return $this->getQuery()->getInfo();
+	}
+	
 	public function sendCommand($command) {
 		if( !$this->isStarted() ) {
 			throw new UserException('requireApplicationStarted');

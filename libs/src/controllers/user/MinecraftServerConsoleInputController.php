@@ -10,13 +10,13 @@ class MinecraftServerConsoleInputController extends HTTPController {
 	public function run(HTTPRequest $request) {
 
 		/* @var $USER User */
-		global $USER;
+// 		global $USER;
 		
 		/* @var $serverUser MinecraftServerUser */
 		/* @var $server MinecraftServer */
 		
 		// 		debug('TEST_DEBUG');
-		$user	= &$USER;
+// 		$user	= &$USER;
 		
 		$serverID	= $request->getPathValue('serverID');
 		$server		= MinecraftServer::load($serverID, false);
@@ -31,7 +31,7 @@ class MinecraftServerConsoleInputController extends HTTPController {
 				throw new UserException('invalidCommand');
 			}
 			$minecraft = $server->getConnector();
-			sendRESTfulJSON(trim($minecraft->sendCommand($command)));
+			sendRESTfulJSON(nl2br(escapeText(trim($minecraft->sendCommand($command)))));
 		} catch( Exception $e ) {
 			sendRESTfulJSON($e);
 		}

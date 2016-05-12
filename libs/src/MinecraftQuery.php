@@ -101,11 +101,17 @@ class MinecraftQuery {
 	}
 
 	public function getInfo() {
+		if( !$this->info ) {
+			$this->collectInformations();
+		}
 		return $this->info;
 // 		return $this->info ? $this->info : false;
 	}
 
 	public function listPlayers() {
+		if( !$this->players ) {
+			$this->collectInformations();
+		}
 		return $this->players;
 // 		return $this->players ? $this->players : false;
 	}

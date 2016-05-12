@@ -14,6 +14,7 @@ $isInstalled	= $server->isInstalled();
 $isOnline		= $isInstalled && $server->isOnline();
 $formData		= array('server'=>$server->all);
 $software		= $server->getServerSoftware();
+$minecraft		= $server->getConnector();
 
 // $command = 'list';
 
@@ -256,17 +257,21 @@ $(function() {
 		if( command.length < 2 ) {
 			return;
 		}
-// 		consoleInput.prop("disabled", true);
+		consoleInput.prop("disabled", true);
 		console.log("Send command => "+command);
 		$.post("http://flo.mcm.sowapps.com/user/server/8/console.json", {"command":command}, function(data) {
 // 			console.log("Command success", data);
+			consoleInput.prop("disabled", false);
+			consoleInput.val("");
 			$(".rcon_alert").remove();
 			if( !data ) {
 				return;
 			}
 			console.log("data.length => "+data.length);
 			consoleInput.parent().after('<div class="rcon_alert alert alert-info mt20 mb0" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'+data+'</div>');
-		});
+		}).fail( function(xhr, textStatus, errorThrown) {
+			consoleInput.prop("disabled", false);
+	    });
 	});
 // 	source.onmessage = function (e) {
 // 		console.log("Message", e);
@@ -293,13 +298,30 @@ $(function() {
 		<form method="POST">
 		<?php HTMLRendering::useLayout('panel-default'); ?>
 		
-			<p class="help-block">
-			Gérez vos projets, enregistrez les ici !
-			</p>
+		<?php
+		$serverInfos = $minecraft->getInfos();
+		if( $serverInfos ) {
+			echo '<div class="form-horizontal">';
+			foreach( $serverInfos as $key => $value ) {
+				echo '
 			<div class="form-group">
-				<label for="NewMinecraftServerName">Nom</label>
-				<input<?php _inputValue('server/name'); ?> name="server[name]" type="text" class="form-control" id="MinecraftServerName" required>
-			</div>
+				<label class="col-sm-3 control-label">'.$key.'</label>
+				<div class="col-sm-9"><p class="form-control-static">'.escapeText(is_array($value) ? '['.implode(', ', $value).']' : $value).'</p></div>
+			</div>';
+			}
+			echo '</div>';
+		}
+		?><h4>Joueurs connectés (<?php echo $serverInfos->numplayers.' / '.$serverInfos->maxplayers; ?>)</h4><?php
+		$serverPlayers = $minecraft->listPlayers();
+		if( $serverPlayers ) {
+			echo '<ul class="list-group">';
+			foreach( $serverPlayers as $player ) {
+				echo '<li class="list-group-item">'.escapeText($player).'</li>';
+			}
+			echo '</ul>';
+		}
+		?>
+		<ul class="list-group"></ul>
 		
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Modifier les paramètres du serveur', 'footer'=>'
 <div class="panel-footer text-right">
