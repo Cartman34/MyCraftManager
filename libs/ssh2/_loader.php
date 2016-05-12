@@ -1,9 +1,9 @@
 <?php
 /**
- * Rcon Library
+ * SSH2 Library
  * 
- * Rcon library to bring MVC features
+ * SSH2 library to bring SSH2 connector
  * 
  */
  
-addAutoload('Rcon',					'rcon/Rcon');
+addAutoload('SSH2',					'ssh2/SSH2');

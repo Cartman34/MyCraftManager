@@ -18,16 +18,37 @@ class MinecraftServerController extends AdminController {
 // 		debug('TEST_DEBUG');
 		$user	= &$USER;
 		
-		$serverDomain	= MinecraftServer::getDomain();
+// 		$serverDomain	= MinecraftServer::getDomain();
 		
 		$serverID	= $request->getPathValue('serverID');
 		$server		= MinecraftServer::load($serverID, false);
 		
+		$this->addThisToBreadcrumb($server.'');
+		
+		if( !$user->canServerManage(CRAC_CONTEXT_APPLICATION, $server) ) {
+			MinecraftServer::throwNotFound();
+		}
+		
 		try {
 			if( $request->hasData('submitUpdateServer') ) {
 				$server->update($request->getData('server'), array('name'));
-				reportSuccess('successUpdate', $serverDomain);
+				reportSuccess(MinecraftServer::text('successUpdate', $server));
 				
+			} else
+			if( $request->hasData('submitTestServer') ) {
+				if( $server->testSSH() ) {
+					reportSuccess(MinecraftServer::text('serverIsOnline', $server));
+				} else {
+					reportWarning(MinecraftServer::text('serverIsOffline', $server));
+				}
+				
+			} else
+			if( $request->hasData('submitTestApplication') ) {
+				if( $server->testRcon() ) {
+					reportSuccess(MinecraftServer::text('applicationIsStarted', $server));
+				} else {
+					reportWarning(MinecraftServer::text('applicationIsStopped', $server));
+				}
 			}
 		} catch( UserException $e ) {
 			reportError($e);

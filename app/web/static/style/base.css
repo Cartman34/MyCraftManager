@@ -122,7 +122,10 @@ script, style {
 .mb60 { margin-bottom: 60px !important; }
 
 .ml0   { margin-left: 0 !important; }
+.ml2   { margin-left: 2px !important; }
 .ml5   { margin-left: 5px !important; }
+.ml6   { margin-left: 6px !important; }
+.ml8   { margin-left: 8px !important; }
 .ml10  { margin-left: 10px !important; }
 .ml15  { margin-left: 15px !important; }
 .ml20  { margin-left: 20px !important; }

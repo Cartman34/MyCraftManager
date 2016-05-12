@@ -44,17 +44,29 @@ http:
 #        restrictTo:
 #          role: member
         
+    adm_serversoftwares:
+        path: "/admin/server-softwares.html"
+        controller: "AdminServerSoftwaresController"
+        restrictTo:
+          role: administrator
+        
     user_servers:
         path: "/user/servers.html"
         controller: "UserServersController"
         restrictTo:
           role: member
         
-    adm_serversoftwares:
-        path: "/admin/server-softwares.html"
-        controller: "AdminServerSoftwaresController"
+    user_server:
+        path: "/user/server/{id:serverID}.html"
+        controller: "MinecraftServerController"
         restrictTo:
-          role: administrator
+          role: member
+        
+    adm_server_console:
+        path: "/user/server/{id:serverID}/console.html"
+        controller: "MinecraftServerConsoleStreamController"
+        restrictTo:
+          role: member
         
 #    user_project:
 #        path: "/user/project/{id:projectID}.html"

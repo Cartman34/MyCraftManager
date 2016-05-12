@@ -23,12 +23,12 @@ addAutoload('FileDownloadController',			'src/controllers/FileDownloadController'
 
 addAutoload('AdminController',					'src/controllers/admin/AdminController');
 addAutoload('AdminMySettingsController',		'src/controllers/admin/AdminMySettingsController');
-addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListController');
 
 addAutoload('AdminServerSoftwaresController',	'src/controllers/admin/AdminServerSoftwaresController');
 
 addAutoload('UserServersController',			'src/controllers/user/UserServersController');
 addAutoload('MinecraftServerController',		'src/controllers/user/MinecraftServerController');
+addAutoload('MinecraftServerConsoleStreamController',	'src/controllers/user/MinecraftServerConsoleStreamController');
 
 addAutoload('FileDownloadController',			'src/controllers/FileDownloadController');
 addAutoload('HomeController',					'src/controllers/HomeController');
@@ -40,6 +40,7 @@ addAutoload('HomeController',					'src/controllers/HomeController');
 
 addAutoload('AdminController',					'src/controllers/admin/AdminController');
 addAutoload('AdminUserListController',			'src/controllers/admin/AdminUserListController');
+addAutoload('AdminUserEditController',			'src/controllers/admin/AdminUserEditController');
 addAutoload('AdminConfigController',			'src/controllers/admin/AdminConfigController');
 addAutoload('DevEntitiesController',			'src/controllers/admin/DevEntitiesController');
 
@@ -63,6 +64,7 @@ PermanentEntity::registerEntity('MinecraftServer');
 
 // Fixtures
 FixtureRepository::register('User');
+FixtureRepository::register('MinecraftServer');
 
 // Hooks
 

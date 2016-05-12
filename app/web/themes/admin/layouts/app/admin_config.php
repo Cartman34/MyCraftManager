@@ -1,4 +1,10 @@
 <?php
+/* @var HTMLRendering $this */
+/* @var HTTPController $Controller */
+/* @var HTTPRequest $Request */
+/* @var HTTPRoute $Route */
+/* @var User $user */
+
 HTMLRendering::useLayout('page_skeleton');
 
 $GlobalConfig	= GlobalConfig::instance();

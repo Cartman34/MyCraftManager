@@ -51,6 +51,10 @@ class User extends AbstractUser implements FixtureInterface {
 // 		return parent::reload($field);
 // 	}
 	
+	public function listServers() {
+		return MinecraftServer::get()->where('owner_id', $this)->orderby('id DESC');
+	}
+	
 	public function getNicename() {
 		return strtolower($this->name);
 	}
@@ -137,6 +141,10 @@ class User extends AbstractUser implements FixtureInterface {
 	
 	public function canEntityDelete($context=CRAC_CONTEXT_APPLICATION, $contextResource=null) {
 		return $this->canDo('entity_delete');// Only App admins can do it.
+	}
+	
+	public function canServerManage($context=CRAC_CONTEXT_APPLICATION, $contextResource=null) {
+		return $this->canDo('common_manage') || ($contextResource instanceof MinecraftServer && $contextResource->owner_id==$this->id());// Only App admins can do it.
 	}
 
 	public static function loadFixtures() {

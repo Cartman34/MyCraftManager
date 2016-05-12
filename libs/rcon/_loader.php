@@ -2,7 +2,7 @@
 /**
  * Rcon Library
  * 
- * Rcon library to bring MVC features
+ * Rcon library to bring Rcon connector
  * 
  */
  

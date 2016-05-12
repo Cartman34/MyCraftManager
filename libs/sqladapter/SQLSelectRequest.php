@@ -33,7 +33,7 @@ class SQLSelectRequest extends SQLRequest {
 				$value		= $equality;
 				$equality	= '=';
 			}
-			$condition = $this->escapeIdentifier($condition).' '.$equality.' '.$this->escapeValue($value);
+			$condition = $this->escapeIdentifier($condition).' '.$equality.' '.$this->escapeValue(is_object($value) ? id($value) : $value);
 		}
 		$where		= $this->get('where', array());
 		$where[]	= $condition;

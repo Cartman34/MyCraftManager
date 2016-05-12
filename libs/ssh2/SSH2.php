@@ -4,11 +4,14 @@
  * Interface with SSH2 servers.
  * 
  * @author	  Florent HAZARD <f.hazard@sowapps.com>
+ * 
+ * apt-get install php5-ssh2
+ * Or apt-get install libssh2-php
  */
 class SSH2 {
 
 	protected $host;
-	protected $port;
+	protected $port = 22;
 	protected $fingerprint;
 // 	protected $timeout;
 	
@@ -16,16 +19,16 @@ class SSH2 {
 	protected $password;
 	
 	protected $publicKeyPath;
+	protected $privateKeyPath;
+	protected $passphrase;
 	
 	protected $connection;
 	protected $allowingNewFingerprint=false;
 	
-
-// 	public function __construct($host, $port=22, $timeout=3) {
 	public function __construct($host, $port=22, $fingerprint=null) {
 		$this->setHost($host);
 		$this->setPort($port);
-		$this->setTimeout($timeout);
+		$this->setFingerprint($fingerprint);
 	}
 	
 	public function connect() {
@@ -42,24 +45,30 @@ class SSH2 {
 			throw new Exception('Cannot connect to server');
 		}
 		$fingerprint = ssh2_fingerprint($connection, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+// 		debug('Got $fingerprint => '.$fingerprint);
+// 		debug('Own $fingerprint => '.$this->fingerprint);
 		if( $fingerprint !== $this->fingerprint ) {
-			if( $this->allowNewFingerprint ) {
-				$this->fingerprint = $fingerprint;
+			if( $this->allowingNewFingerprint ) {
+				$this->setFingerprint($fingerprint);
 			} else {
 				throw new Exception('Unable to verify server fingerprint');
 			}
 		}
 		$authenticated = false;
-		if( $this->username && ssh2_auth_password($connection, $this->username, $this->password) ) {
+		if( $this->privateKeyPath && ssh2_auth_pubkey_file($connection, $this->username, $this->publicKeyPath, $this->privateKeyPath, $this->passphrase) ) {
+			$authenticated = true;
+		} else
+		if( $this->password && ssh2_auth_password($connection, $this->username, $this->password) ) {
 			$authenticated = true;
 		}
 		if( $authenticated ) {
 			$this->connection = $connection;
+			return true;
 		}
 // 		if (!ssh2_auth_pubkey_file($this->connection, $this->ssh_auth_user, $this->ssh_auth_pub, $this->ssh_auth_priv, $this->ssh_auth_pass)) {
 // 			throw new Exception('Autentication rejected by server');
 // 		}
-		return true;
+		return false;
 	}
 
 	public function exec($cmd, &$output=null, &$error=null) {
@@ -83,6 +92,11 @@ class SSH2 {
 		
 	}
 	
+	public function sendCertificate($publicKeyPath) {
+		// TODO : Avoid duplicate
+		$this->exec('mkdir -p ~/.ssh; chmod u+rw ~/.ssh ~/.ssh/authorized_keys; echo "'.file_get_contents($publicKeyPath).'" >> ~/.ssh/authorized_keys; chmod go-rwx ~/.ssh ~/.ssh/authorized_keys;');
+	}
+	
 	public function disconnect() {
 		unset($this->connection);
 	}
@@ -97,6 +111,17 @@ class SSH2 {
 	public function setPasswordAuthentication($username, $password) {
 		$this->username = $username;
 		$this->password = $password;
+		return $this;
+	}
+
+	public function setCertificateAuthentication($username, $privateKeyPath, $publicKeyPath=null, $passphrase=null) {
+		if( !is_readable($privateKeyPath) || !is_readable($publicKeyPath) ) {
+			throw new Exception('Unable to read private key file and public key file, make it readable by web server (apache => www-data).');
+		}
+		$this->username = $username;
+		$this->privateKeyPath = $privateKeyPath;
+		$this->publicKeyPath = $publicKeyPath ? $publicKeyPath : $privateKeyPath.'.pub';
+		$this->passphrase = $passphrase;
 		return $this;
 	}
 	
@@ -115,7 +140,9 @@ class SSH2 {
 		return $this->port;
 	}
 	public function setPort($port) {
-		$this->port = (int) $port;
+		if( $port ) {
+			$this->port = (int) $port;
+		}
 		return $this;
 	}
 	public function getUsername() {
@@ -149,6 +176,14 @@ class SSH2 {
 		$this->allowingNewFingerprint = !!$allowingNewFingerprint;
 		return $this;
 	}
+	public function getFingerprint() {
+		return $this->fingerprint;
+	}
+	public function setFingerprint($fingerprint) {
+		$this->fingerprint = $fingerprint;
+		return $this;
+	}
+	
 	
 	
 }

@@ -14,10 +14,11 @@ fields:
     ssh_host:           string(100)
     ssh_port:           natural(65535)[nullable]    # SSH Port, default is 22
     ssh_user:           string(50)
-    ssh_password:       string(100)
-    rcon_port:          natural(65535)[nullable]    # RCON Port, default is 25575
+    ssh_fingerprint:    string[nullable]
+#    ssh_password:       string(100)
+    rcon_port:          integer(1025, 65535)[nullable]    # RCON Port, default is 25575, min 1025
     rcon_password:      string(100)[nullable]
-    query_port:         natural(65535)[nullable]    # RCON Port, default is 25575
+    query_port:         integer(1025, 65535)[nullable]    # RCON Port, default is 25575, min 1025
     
     pid:                string(10)[nullable]
     install_date:       datetime[nullable]

@@ -1,4 +1,10 @@
 <?php
+/* @var HTMLRendering $this */
+/* @var HTTPController $Controller */
+/* @var HTTPRequest $Request */
+/* @var HTTPRoute $Route */
+/* @var User $user */
+
 HTMLRendering::addJSURL('https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js');
 HTMLRendering::addCSSURL('https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css');
 HTMLRendering::addJSURL('https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js');

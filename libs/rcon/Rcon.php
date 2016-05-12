@@ -33,42 +33,42 @@ class Rcon {
 	/**
 	 * @var string
 	 */
-	private $_host;
+	protected $host;
 
 	/**
 	 * @var int
 	 */
-	private $_port = 27015;
+	protected $port = 27015;
 
 	/**
 	 * @var string
 	 */
-	private $_password;
+	protected $password;
 
 	/**
 	 * @var resource
 	 */
-	private $_socket = null;
+	protected $connection = null;
 
 	/**
 	 * @var int
 	 */
-	private $_id = 1;
+	protected $id = 1;
 
 	/**
 	 * @var int
 	 */
-	private $_connectionTimeout;
+	protected $connectionTimeout;
 
 	/**
 	 * @var int
 	 */
-	private $_timeoutSecs;
+	protected $timeoutSecs;
 
 	/**
 	 * @var int
 	 */
-	private $_timeoutUsecs;
+	protected $timeoutUsecs;
 
 	/**
 	 * Constructs a new instance. Does not connect.
@@ -85,18 +85,15 @@ class Rcon {
 	 * @see setConnectionTimeout
 	 * @see setTimeout
 	 */
-	public function __construct($host, $port, $password=null, $connectionTimeout = 5,
-								$timeoutSecs = 0, $timeoutUsecs = 5000) {
+	public function __construct($host, $port, $password=null, $connectionTimeout = 5, $timeoutSecs = 0, $timeoutUsecs = 5000) {
 		$this->setHost($host);
-		$this->setPort($port);
+// 		$this->setPort($port);
+		$this->setPort(25565);
 		$this->setPassword($password);
 		$this->setConnectionTimeout($connectionTimeout);
 		$this->setTimeout($timeoutSecs, $timeoutUsecs, false);
 	}
 
-	/**
-	 * Destructor for this instance.
-	 */
 	public function __destruct() {
 		$this->disconnect();
 	}
@@ -105,7 +102,7 @@ class Rcon {
 	 * @return boolean Whether or not this instance is currently connected to the Rcon server.
 	 */
 	public function isConnected() {
-		return is_resource($this->_socket);
+		return is_resource($this->connection);
 	}
 
 	/**
@@ -115,38 +112,54 @@ class Rcon {
 	 */
 	public function connect() {
 		if( $this->isConnected() ) {
-			throw new RuntimeException("We are already connected to the server.");
+			return false;
+// 			throw new RuntimeException("We are already connected to the server.");
 		}
 
-		$this->_socket = @fsockopen($this->_host, $this->_port, $errNo, $errStr, $this->_connectionTimeout);
+// 		debug("fsockopen(".$this->host.", ".$this->port.", null, null, ".$this->connectionTimeout.")");
+		$connection = fsockopen($this->host, $this->port, $errNo, $errStr, $this->connectionTimeout);
+// 		debug("fsockopen(".$this->host.", ".$this->port.", ".$errNo.", ".$errStr.", ".$this->connectionTimeout.")");
+// 		$this->connection = @fsockopen($this->host, $this->port, $errNo, $errStr, $this->connectionTimeout);
 // 		debug('Socket');
-// 		var_dump($this->_socket); echo '<br />';
+// 		var_dump($this->connection); echo '<br />';
 
-		if( !is_resource($this->_socket) ) {
+		if( !is_resource($connection) ) {
 			throw new RuntimeException("Failed to connect to server: $errStr ($errNo).");
 		}
 
-		socket_set_timeout($this->_socket, $this->_timeoutSecs, $this->_timeoutUsecs);
+		stream_set_timeout($connection, $this->timeoutSecs, $this->timeoutUsecs);
 
-		$ret = $this->send(self::PACKET_AUTH, $this->_password);
-// 		debug('Auth recv packet', $ret);
+		$this->connection = $connection;
+
+		try {
+			$ret = $this->send(self::PACKET_AUTH, $this->password);
+	// 		debug('Auth recv packet', $ret);
+		} catch( Exception $e ) {
+			$this->disconnect();
+			return false;
+		}
 		
 // 		if( $ret['type'] == self::PACKET_AUTH_FAILURE ) {
 		if( $ret['id'] == self::PACKET_AUTH_FAILURE ) {
 			throw new RuntimeException("Failed to authenticate.");
 		}
+		return true;
 	}
 
 	/**
-	 * Disconnects from the Rcon server.
+	 * Disconnect from the server.
 	 */
 	public function disconnect() {
 		if( !$this->isConnected() ) {
 			return false;
 		}
-		@fclose($this->_socket);
-
-		$this->_socket = null;
+		try {
+			fclose($this->connection);
+		} catch( Exception $e ) {
+			return false;
+		} finally {
+			$this->connection = null;
+		}
 		return true;
 	}
 
@@ -179,9 +192,9 @@ class Rcon {
 	 * @return int The packet ID.
 	 * @throws \RuntimeException if we fail to write to the socket.
 	 */
-	private function _sendPacket($type, $body = '') {
-		$id = $this->_id;
-		$this->_id++;
+	protected function _sendPacket($type, $body = '') {
+		$id = $this->id;
+		$this->id++;
 // 		debug('Send with id #'.$id);
 
 		// Construct packet
@@ -190,8 +203,8 @@ class Rcon {
 
 // 		debug("Write data ");
 // 		debug("Write data ".strlen($data));
-		$result = fwrite($this->_socket, $data, strlen($data));
-// 		$result = @fwrite($this->_socket, $data, strlen($data));
+		$result = fwrite($this->connection, $data, strlen($data));
+// 		$result = @fwrite($this->connection, $data, strlen($data));
 // 		var_dump($result);echo '<br>';
 		if( !$result ) {
 			throw new RuntimeException("Failed to write to socket.");
@@ -211,17 +224,19 @@ class Rcon {
 	 * @throws \RuntimeException If the Rcon server sends an invalid response
 	 * stream, or none at all.
 	 */
-	private function _receivePacket($expectSplitResponse=false) {
+	protected function _receivePacket($expectSplitResponse=false) {
 		$id = null;
 		$type = null;
 		$body = null;
 
 		// Read the size (4 bytes = 32-bit integer)
-		while ($size = @fread($this->_socket, 4)) {
+		while( $size = fread($this->connection, 4) ) {
+// 		while( $size = @fread($this->connection, 4) ) {
 
-			$size = unpack('V1size',$size);
+			$size = unpack('V1size', $size);
 
-			$bytes = @fread($this->_socket, $size["size"]);
+			$bytes = fread($this->connection, $size["size"]);
+// 			$bytes = @fread($this->connection, $size["size"]);
 
 			if( $bytes === false ) {
 				throw new RuntimeException("Rcon server disconnected.");
@@ -236,14 +251,14 @@ class Rcon {
 				$type = $packet['type'];
 				$body = $packet['body'];
 			} else {
-				if ($id != $packet['id']) {
+				if( $id != $packet['id'] ) {
 					throw new RuntimeException("Responses sent in wrong order - id mismatch.");
 				}
 
 				$body .= $packet['body'];
 			}
 
-			if ( ! $expectSplitResponse) {
+			if ( !$expectSplitResponse) {
 				break;
 			}
 		}
@@ -280,39 +295,39 @@ class Rcon {
 	 * @return int The id of the last packet sent to the Rcon server.
 	 * @throws \RuntimeException if no packet has been sent yet.
 	 */
-	public function getLastId()
-	{
-		if ($this->_id == 0) {
+	public function getLastId() {
+		if( !$this->id ) {
+// 		if( $this->id == 0 ) {
 			throw new \RuntimeException("No packet has been sent yet.");
 		}
 
-		return $this->_id - 1;
+		return $this->id - 1;
 	}
 
 	/**
 	 * @param string $host The location of the Rcon server.
 	 * @throws \InvalidArgumentException
 	 */
-	public function setHost($host)
-	{
-		if ( ! is_string($host)) {
-			throw new InvalidArgumentException("\$host must be a string.");
+	public function setHost($host) {
+		if( !is_string($host)) {
+			throw new InvalidArgumentException('$host must be a string.');
 		}
 
-		$this->_host = $host;
+		$this->host = $host;
 	}
 
 	/**
 	 * @param int $port The port the Rcon server is on.
 	 * @throws \InvalidArgumentException
 	 */
-	public function setPort($port)
-	{
-		if ( ! is_int($port) || $port < 0 || $port > 65535) {
-			throw new InvalidArgumentException("\$port must be an integer in the range 0 to 65535.");
+	public function setPort($port) {
+		if( $port ) {
+			if ( !is_int($port) || $port < 0 || $port > 65535) {
+				throw new InvalidArgumentException("\$port must be an integer in the range 0 to 65535.");
+			}
+			$this->port = $port;
 		}
-
-		$this->_port = $port;
+		return $this;
 	}
 
 	/**
@@ -320,10 +335,10 @@ class Rcon {
 	 * @throws \InvalidArgumentException
 	 */
 	public function setPassword($password) {
-		if ( $password != null && !is_string($password) ) {
+		if( $password != null && !is_string($password) ) {
 			throw new InvalidArgumentException("The password must be a string or null.");
 		}
-		$this->_password = $password;
+		$this->password = $password;
 	}
 
 	/**
@@ -336,7 +351,7 @@ class Rcon {
 			throw new InvalidArgumentException("The connection timeout must be a number greater than 0.");
 		}
 
-		$this->_connectionTimeout = $secs;
+		$this->connectionTimeout = $secs;
 	}
 
 	/**
@@ -350,20 +365,20 @@ class Rcon {
 	 * @throws \InvalidArgumentException
 	 * @throws \RuntimeException if we fail to set the socket timeout.
 	 */
-	public function setTimeout($secs, $uSecs, $apply = true) {
-		if ( ! is_int($secs) || $secs < 0) {
+	public function setTimeout($secs, $uSecs=0, $apply = true) {
+		if( !is_int($secs) || $secs < 0 ) {
 			throw new InvalidArgumentException("The timeout seconds must be an integer greater than 0.");
 		}
 
-		if ( ! is_int($uSecs) || $uSecs < 0) {
+		if( !is_int($uSecs) || $uSecs < 0 ) {
 			throw new InvalidArgumentException("The timeout microseconds must be an integer greater than 0.");
 		}
 
-		$this->_timeoutSecs = $secs;
-		$this->_timeoutUsecs = $uSecs;
+		$this->timeoutSecs = $secs;
+		$this->timeoutUsecs = $uSecs;
 
 		if ($apply) {
-			if ( ! stream_set_timeout($this->_socket, $secs, $uSecs)) {
+			if ( !stream_set_timeout($this->connection, $secs, $uSecs) ) {
 				throw new RuntimeException("Failed to set socket timeout.");
 			}
 		}

@@ -8,12 +8,13 @@ abstract class AdminController extends HTTPController {
 		$this->breadcrumb[]	= (object)array('label' => $label, 'link' => $link);
 	}
 
-	public function addRouteToBreadcrumb($route, $link=true) {
-		$this->addBreadcrumb(t($route), $link ? u($route, is_array($link) ? $link : array()) : null);
+	public function addRouteToBreadcrumb($route, $label=null, $link=true) {
+		$this->addBreadcrumb($label ? $label : t($route), $link ? u($route, is_array($link) ? $link : array()) : null);
 	}
 
-	public function addThisToBreadcrumb($link=false) {
-		$this->addRouteToBreadcrumb($this->getRouteName(), $link);
+	public function addThisToBreadcrumb($label=null, $link=false) {
+		$link = $this->getRequest()->getParameters();
+		$this->addRouteToBreadcrumb($this->getRouteName(), $label, $link);
 	}
 	
 	public function preRun(HTTPRequest $request) {
