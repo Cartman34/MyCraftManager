@@ -44,22 +44,52 @@ class MinecraftServerController extends AdminController {
 				
 			} else
 			if( $request->hasData('submitTestApplication') ) {
-				if( $server->testRcon() ) {
+				if( !$server->testIsStarted() ) {
+					reportWarning(MinecraftServer::text('applicationIsStopped', $server));
+				} else
+				if( $server->testIsOnline() ) {
 					reportSuccess(MinecraftServer::text('applicationIsStarted', $server));
 				} else {
-					reportWarning(MinecraftServer::text('applicationIsStopped', $server));
+					reportWarning(MinecraftServer::text('applicationIsOffline', $server));
 				}
 				
 			} else
+			if( $request->hasData('submitTestInstall') ) {
+				$isInstalled = $server->testInstall();
+				if( $isInstalled === null ) {
+					reportSuccess(MinecraftServer::text($server->isInstalled() ? 'applicationAlwaysInstalled' : 'applicationAlwaysUninstalled', $server));
+				} else {
+					reportWarning(MinecraftServer::text($isInstalled ? 'applicationNowInstalled' : 'applicationNowUninstalled', $server));
+				}
+				
+			} else
+			if( $request->hasData('submitStartApplication') ) {
+// 				$minecraft = $server->getConnector();
+				$server->start();
+				reportSuccess(MinecraftServer::text('successStart', $server));
+				
+			} else
+			if( $request->hasData('submitStopApplication') ) {
+// 				$minecraft = $server->getConnector();
+				$server->stop();
+				reportSuccess(MinecraftServer::text('successStop', $server));
+				
+			} else
 			if( $request->hasData('submitInstallApplication') ) {
-				$minecraft = $server->getConnector();
-				$minecraft->install();
+// 				$minecraft = $server->getConnector();
+// 				$minecraft->install();
+				$server->install();
 				reportSuccess(MinecraftServer::text('successInstall', $server));
 			}
 		} catch( UserException $e ) {
 			reportError($e);
 		}
 // 		endReportStream();
+// 		if( $server->isStarted() && !$server->isOnline() ) {
+		if( $server->isStarting() ) {
+// 			debug('Is starting');
+			$server->testIsOnline();
+		}
 		
 		return $this->renderHTML('app/user_server', array(
 			'user'			=> $user,

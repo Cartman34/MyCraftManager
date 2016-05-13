@@ -13,8 +13,8 @@ fields:
 #    file_id:            ref(file)=0
     image_id:           ref(file)=0
     published:          boolean=false
-    installer_path:     string(2, 100)[nullable]
-    starter_path:       string(2, 100)
+    install_command:    string[nullable]
+    start_command:      string
 
 indexes:
      - INDEX(slug)

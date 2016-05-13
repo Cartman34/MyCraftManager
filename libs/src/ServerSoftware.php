@@ -13,8 +13,8 @@
  * @property string $version
  * @property string $file_url
  * @property integer $image_id
- * @property string $installer_path
- * @property string $starter_path
+ * @property string $install_command
+ * @property string $start_command
  */
 class ServerSoftware extends PermanentEntity {
 	/*
@@ -45,6 +45,12 @@ class ServerSoftware extends PermanentEntity {
 	public static function listByName() {
 		return static::get()->orderby("name ASC, INET_ATON(SUBSTRING_INDEX(CONCAT(version,'.0.0.0'),'.',4)) DESC");
 	}
-
+	
+	public function getInstallCommand() {
+		return $this->install_command;
+	}
+	public function getStartCommand() {
+		return $this->start_command;
+	}
 }
 ServerSoftware::init();

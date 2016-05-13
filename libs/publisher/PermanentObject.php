@@ -398,9 +398,13 @@ abstract class PermanentObject {
 // 			}
 // 		}
 
+// 		debug('$this->all', $this->all);
 		$data = array_filterbykeys($this->all, $this->modFields);
 // 		debug('$this->modFields', $this->modFields);
 // 		debug('$data', $data);
+		if( !$data ) {
+			throw new Exception('No updated data found but there is modified fields, unable to update');
+		}
 		$operation = $this->getUpdateOperation($data, $this->modFields);
 		// Do not validate, new data are invalid due to the fact the new data are already in object
 // 		$operation->validate();

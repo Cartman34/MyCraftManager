@@ -46,8 +46,8 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function getConnector() {
 		if( !$this->connector ) {
 			$software = $this->getServerSoftware();
-			$this->connector = new MinecraftServerConnector($this->getSSH(), $this->getRcon(), $this->getMCQuery(), $this->path,
-				$software->file_url, $software->starter_path, $software->installer_path, $this->isInstalled());
+			$this->connector = new MinecraftServerConnector($this->id(), $this->getSSH(), $this->getRcon(), $this->getMCQuery(), $this->path,
+				$software->file_url, $software->getStartCommand(), $software->getInstallCommand(), $this->isInstalled());
 		}
 		return $this->connector;
 	}
@@ -61,8 +61,61 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 
 	public function install() {
 		$minecraft = $this->getConnector();
-		$minecraft->install();
+		$minecraft->install($this->generateServerConfig());
 		$this->install_date = sqlDatetime();
+	}
+	
+	public function testInstall() {
+		$prevInstalled = $this->isInstalled();
+		$minecraft = $this->getConnector();
+		$nowInstalled = $minecraft->testInstall();
+		if( $prevInstalled != $nowInstalled ) {
+			$this->install_date = $nowInstalled ? sqlDatetime() : null;
+			if( !$this->install_date ) {
+				$this->start_date = null;
+				$this->isonline = false;
+// 				debug('No more installed');
+			}
+			$this->save();
+			return $nowInstalled;
+		}
+		return null;// No change
+	}
+
+	public function start() {
+		if( $this->isStarted() ) {
+			return false;
+		}
+		$minecraft = $this->getConnector();
+		$this->start_date = sqlDatetime();
+		$this->save();
+		$minecraft->start();
+	}
+	
+	public function testIsStarted() {
+		$minecraft = $this->getConnector();
+		$this->pid = $minecraft->getPID();
+		if( !$this->pid && $this->isStarted() ) {
+			// The process ended
+			$this->start_date = null;
+			$this->isonline = false;
+// 		} else
+// 		if( $this->pid && $this->isStarted() && !$this->isOnline() ) {
+			// 
+		}
+		$this->save();
+		return $this->isStarted();
+	}
+
+	public function stop() {
+		if( !$this->isStarted() ) {
+			return false;
+		}
+		$minecraft = $this->getConnector();
+		$minecraft->stop();
+		$this->start_date = null;
+		$this->isonline = false;
+		$this->save();
 	}
 
 	public function isInstalled() {
@@ -71,6 +124,10 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	
 	public function isStarted() {
 		return !!$this->start_date;
+	}
+	
+	public function isStarting() {
+		return $this->isStarted() && !$this->isOnline();
 	}
 	
 	public function isOnline() {
@@ -134,17 +191,21 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		return $this->rcon;
 	}
 	
-	public function testRcon() {
-		$rcon	= $this->getRcon();
-		$ok		= false;
-		try {
-			$rcon->connect();
-			$ok = true;
-		} catch( Exception $e ) {
-// 			 debug('testRcon() - Exception - '.$e->getMessage(), $e);
-		}
-		$this->isonline = $ok;
-		return $ok;
+// 	public function testRcon() {
+// 		$rcon	= $this->getRcon();
+// 		$ok		= false;
+// 		try {
+// 			$rcon->connect();
+// 			$ok = true;
+// 		} catch( Exception $e ) {
+// // 			 debug('testRcon() - Exception - '.$e->getMessage(), $e);
+// 		}
+// 		$this->isonline = $ok;
+// 		return $ok;
+// 	}
+	
+	public function testIsOnline() {
+		$this->isonline = $this->getConnector()->isStarted();
 	}
 
 	/**
@@ -238,6 +299,51 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		// TODO generate private & public keys on fs
 		// TODO Create minecraft_ssh_private_key_path config
 		// TODO Create minecraft_ssh_public_key_path config
+	}
+	
+	public function generateServerConfig() {
+		$queryPort = $this->query_port ? $this->query_port : 25565;
+		$rconPort = $this->rcon_port ? $this->rcon_port : 25575;
+		$config = <<<EOF
+# Automatically generated file from MyCraft Manager
+# Minecraft server properties
+# Fri May 13 10:11:42 EDT 2016
+generator-settings=
+op-permission-level=4
+allow-nether=true
+level-name=world
+allow-flight=false
+announce-player-achievements=true
+level-type=DEFAULT
+force-gamemode=false
+level-seed=
+server-ip=
+server-port=25565
+online-mode=true
+generate-structures=true
+motd={$this->name}
+enable-query=true
+query.port={$queryPort}
+enable-rcon=true
+rcon.port={$rconPort}
+rcon.password={$this->rcon_password}
+max-players=20
+resource-pack=
+max-build-height=256
+spawn-npcs=true
+white-list=false
+spawn-animals=true
+snooper-enabled=true
+hardcore=false
+difficulty=1
+pvp=true
+enable-command-block=false
+player-idle-timeout=0
+gamemode=0
+spawn-monsters=true
+view-distance=10
+EOF;
+		return $config;	
 	}
 
 

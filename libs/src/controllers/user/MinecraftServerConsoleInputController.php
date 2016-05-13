@@ -34,6 +34,10 @@ class MinecraftServerConsoleInputController extends HTTPController {
 			if( $commandProg === 'help' ) {
 				MinecraftServer::throwException('unavailableCommand');
 			}
+			if( $commandProg === 'stop' ) {
+				$server->stop();
+				sendRESTfulJSON(MinecraftServer::text('successStop', $server));
+			}
 			$minecraft = $server->getConnector();
 			$result = $minecraft->sendCommand($command);
 // 			$result .= ' [';

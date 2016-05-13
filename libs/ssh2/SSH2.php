@@ -43,7 +43,7 @@ class SSH2 {
 		if( $this->isConnected() ) {
 			return false;
 		}
-		debug('SSH2 connect');
+// 		debug('SSH2 connect');
 		$connection = ssh2_connect($this->host, $this->port);
 		if( !$connection ) {
 			throw new Exception('Cannot connect to server');
@@ -100,7 +100,7 @@ class SSH2 {
 // 			debug('not connected');
 			$this->connect();
 		}
-		debug('Exec command : '.$cmd);
+// 		debug('Exec command : '.$cmd);
 		// http://php.net/manual/en/function.ssh2-exec.php
 		$stream = ssh2_exec($this->connection, ($this->currentDirectory ? 'cd "'.$this->currentDirectory.'"; ' : '').$cmd);
 		if( $stream === false ) {

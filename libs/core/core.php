@@ -1598,8 +1598,8 @@ function array_add(&$array, $other) {
 function array_filterbykeys($array, $keys) {
 	$r	= array();
 	foreach( $keys as $key ) {
-		if( isset($array[$key]) ) {
-			$r[$key]	= $array[$key];
+		if( array_key_exists($key, $array) ) {
+			$r[$key] = $array[$key];
 		}
 	}
 	return $r;

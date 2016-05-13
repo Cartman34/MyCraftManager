@@ -11,20 +11,23 @@ class MinecraftServerConnector {
 	protected $rcon;
 	/* @var MinecraftQuery $query */
 	protected $query;
+	protected $id;
 	protected $path;
 	protected $softwareUrl;
-	protected $startPath;
-	protected $installPath;
+	protected $startCommand;
+	protected $installCommand;
 	protected $installed;
+	protected $started;
 	
-	public function __construct($ssh, $rcon, $query, $path, $softwareUrl, $startPath, $installPath, $installed) {
+	public function __construct($id, $ssh, $rcon, $query, $path, $softwareUrl, $startCommand, $installCommand, $installed) {
+		$this->setId($id);
 		$this->setSSH($ssh);
 		$this->setRcon($rcon);
 		$this->setQuery($query);
 		$this->setPath($path);
 		$this->setSoftwareUrl($softwareUrl);
-		$this->setStartPath($startPath);
-		$this->setInstallPath($installPath);
+		$this->setStartCommand($startCommand);
+		$this->setInstallCommand($installCommand);
 		$this->setInstalled($installed);
 	}
 	
@@ -40,7 +43,7 @@ class MinecraftServerConnector {
 		$this->query->disconnect();
 	}
 	
-	public function install() {
+	public function install($config) {
 		if( $this->isInstalled() ) {
 			throw new UserException('applicationAlreadyInstalled');
 		}
@@ -50,55 +53,34 @@ class MinecraftServerConnector {
 
 		ignore_user_abort(true);
 		set_time_limit(0);
-		ini_set("default_socket_timeout", 3600);
-		ini_set('output_buffering', 0);
-		apache_setenv('no-gzip', 1);
-		ini_set('zlib.output_compression', 0);
-		ini_set('implicit_flush', 1);
-		session_write_close();
-		while( ob_get_level() && ob_end_clean() );
+// 		ini_set("default_socket_timeout", 3600);
+// 		ini_set('output_buffering', 0);
+// 		apache_setenv('no-gzip', 1);
+// 		ini_set('zlib.output_compression', 0);
+// 		ini_set('implicit_flush', 1);
+// 		session_write_close();
+// 		while( ob_get_level() && ob_end_clean() );
 		
 		
-		debug('Install software => '.$softwareUrl);
-		debug('Install path => '.$this->getPath());
-		flush();
+// 		debug('Install software => '.$softwareUrl);
+// 		debug('Install path => '.$this->getPath());
+// 		flush();
 		
 		$ssh->exec('mkdir -p '.$this->getPath(), $output, $error);
-// 		$ssh->exec('mkdir -p '.$this->getPath().'; echo mkdir', $output, $error);
 // 		debug('mkdir - output', $output);
 // 		debug('mkdir - error', $error);
 // 		flush();
 		
-// 		$ssh->execRaw('cd '.$this->getPath());
 		$ssh->setCurrentDirectory($this->getPath());
-// 		$ssh->exec('cd '.$this->getPath().'; pwd', $output, $error);
-// 		debug('cd - output', $output);
-// 		debug('cd - error', $error);
-// 		flush();
 		
-// 		$ssh->exec('pwd', $output, $error);
-// 		debug('pwd - output', $output);
-// 		debug('pwd - error', $error);
-// 		flush();
-		
-// 		$ssh->exec('touch testfile-'.uniqid().'; echo touch', $output, $error);
-// 		debug('touch - output', $output);
-// 		debug('touch - error', $error);
-// 		flush();
-		
-// 		die();
 		// Wget is quiet but normally output to error stream (this is normal)
-		$ssh->exec('wget -q '.$softwareUrl.' -O '.$urlInfos->basename, $output, $error);
+		$ssh->exec('wget -q '.$softwareUrl.' -O "'.$urlInfos->basename.'"', $output, $error);
 // 		debug('wget - output', $output);
 // 		debug('wget - error', $error);
 // 		flush();
 		
-// 		filename = pathinfo($softwareUrl, PATHINFO_EXTENSION);
-// 		$extension = pathinfo($softwareUrl, PATHINFO_EXTENSION);
-// 		filename = pathinfo($softwareUrl, PATHINFO_EXTENSION);
-// 		$extension = $urlInfos->extension;
 		if( $urlInfos->extension === 'zip' ) {
-			$ssh->exec('unzip -qq -of '.$urlInfos->basename, $output, $error);
+			$ssh->exec('unzip -qq -o "'.$urlInfos->basename.'"', $output, $error);
 // 			debug('unzip - output', $output);
 // 			debug('unzip - error', $error);
 // 			flush();
@@ -109,33 +91,34 @@ class MinecraftServerConnector {
 			// Launch once to create configuration ?
 		}
 		
-		$ssh->exec('rm -f '.$urlInfos->basename, $output, $error);
+		$ssh->exec('rm -f "'.$urlInfos->basename.'"', $output, $error);
 // 		debug('rm - output', $output);
 // 		debug('rm - error', $error);
 // 		flush();
-// 		$ssh->execRaw('rm -f '.$urlInfos->basename);
 		
-		$installPath = $this->getInstallPath();
-		if( $installPath ) {
-// 			debug('install - output', $output);
-			$ssh->execRaw('chmod u+x '.$installPath, $output, $error);
+		$installCommand = $this->getInstallCommand();
+		if( $installCommand ) {
+			$ssh->execRaw('chmod u+x '.$installCommand, $output, $error);
 // 			debug('chmod - output', $output);
 // 			debug('chmod - error', $error);
 // 			flush();
 			
-			$ssh->exec('./'.$installPath.' 2> /dev/null', $output, $error);
-			debug('install - output', $output);
-			debug('install - error', $error);
-			flush();
+			$ssh->exec($installCommand.' 2> /dev/null', $output, $error);
+// 			debug('install - output', $output);
+// 			debug('install - error', $error);
+// 			flush();
 		}
 
-		$ssh->exec('chmod u+x '.$this->getStartPath(), $output, $error);
-		debug('chmod - output', $output);
-		debug('chmod - error', $error);
-		flush();
-// 		$ssh->execRaw('chmod u+x '.$this->getStartPath());
+		$ssh->exec('chmod u+x '.$this->getStartCommand(), $output, $error);
+		$ssh->exec('mkdir -p logs', $output, $error);
+		$ssh->exec('echo "eula=true" > eula.txt', $output, $error);
+		$ssh->exec('echo "'.$config.'" > server.properties', $output, $error);
+// 		debug('chmod - output', $output);
+// 		debug('chmod - error', $error);
+// 		flush();
+// 		$ssh->execRaw('chmod u+x '.$this->getStartCommand());
 		
-		die();
+// 		die();
 		/*
 		 * File exist, working
 		 * ( [[ -e "modpacks^FTBInfinity^2_5_0^FTBInfinitySver.zip" ]] && echo "Exist" ) || echo "Not exist"
@@ -143,10 +126,31 @@ class MinecraftServerConnector {
 // 		$this->setInstalled(true);
 	}
 	
+	public function testInstall() {
+		$ssh = $this->getSSH();
+		$ssh->setCurrentDirectory($this->getPath());
+		$ssh->exec('( [ -d "logs" ] && [ -w "logs" ] && echo -n "OK" ) || echo -n "NOPE"', $output, $error);
+// 		debug('$output => ['.$output.']');
+		$this->installed = $output === 'OK';
+		return $this->installed;
+	}
+	
+	public function getProcessTag() {
+		return 'MC_SERVER_ID='.$this->getId();
+	}
 	public function start() {
 		if( $this->isStarted() ) {
 			throw new UserException('applicationAlreadyStarted');
 		}
+		$ssh = $this->getSSH();
+		$ssh->setCurrentDirectory($this->getPath());
+		$ssh->exec('nohup bash -c "'.$this->getProcessTag().' '.$this->getStartCommand().'" &> logs/output.log &', $output, $error);
+// 		$ssh->exec('nohup bash -c "'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
+// 		$ssh->exec('nohup ./'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
+// 		$ssh->exec('nohup ./'.$this->getStartCommand().' 2> logs/output.log', $output, $error);
+		debug('start - output', $output);
+		debug('start - error', $error);
+		$this->started = true;
 	}
 	
 	public function stop() {
@@ -154,12 +158,14 @@ class MinecraftServerConnector {
 			throw new UserException('applicationNotStarted');
 		}
 		$this->getRcon()->command('stop');
+		$this->started = false;
 	}
 	
 	/* *** Server *** */
 	
 	public function getLogsStream() {
-		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
+		$stream = $this->getSSH()->execRaw('tail -n 100 -f '.$this->path.'/logs/output.log');
+// 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
 // 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log | grep -v "RCON Listener"');
 		stream_set_blocking($stream, false);
 		return $stream;
@@ -195,10 +201,25 @@ class MinecraftServerConnector {
 		return $ok;
 	}
 	
+	public function getPID() {
+		$ssh = $this->getSSH();
+		$ssh->setCurrentDirectory($this->getPath());
+		$ssh->exec("ps axe | grep '[j]ava.*".$this->getProcessTag()."' | awk '{print $1}'", $output, $error);
+// 		$ssh->exec('nohup bash -c "'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
+// 		$ssh->exec('nohup ./'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
+// 		$ssh->exec('nohup ./'.$this->getStartCommand().' 2> logs/output.log', $output, $error);
+// 		debug('get pid - output', $output);
+// 		debug('get pid - error', $error);
+		return $output ? trim($output) : null;
+	}
+	
 	/* *** Application *** */
 
 	protected $players;
 	public function listPlayers() {
+		if( !$this->isInstalled() || !$this->isStarted() ) {
+			return array();
+		}
 		if( $this->players === null ) {
 			$this->getInfos();// Connect & ensure validity
 			$this->players = $this->getQuery()->listPlayers();
@@ -208,9 +229,15 @@ class MinecraftServerConnector {
 	
 	protected $infos;
 	public function getInfos() {
+		if( !$this->isInstalled() || !$this->isStarted() ) {
+			return null;
+		}
 		if( $this->infos === null ) {
 			try {
 				$this->infos = $this->getQuery()->getInfo();
+				if( empty($this->infos) || empty($this->infos->hostname) ) {
+					$this->started = false;
+				}
 				
 			} catch( Exception $e ) {
 				$this->infos = array();
@@ -248,11 +275,11 @@ class MinecraftServerConnector {
 		return $this->getRcon()->command($command);
 	}
 	
-	protected $started;
 	public function isStarted() {
 		if( $this->started === null ) {
 			$this->testIsStarted();
 		}
+// 		debug('Is completely started ? '.b($this->started));
 		return $this->started;
 	}
 	
@@ -266,7 +293,7 @@ class MinecraftServerConnector {
 			$this->rcon->connect();
 			$ok = true;
 		} catch( Exception $e ) {
-// 			 debug('testRcon() - Exception - '.$e->getMessage(), $e);
+			debug('testRcon() - Exception - '.$e->getMessage(), $e);
 		}
 		return $ok;
 	}
@@ -295,18 +322,18 @@ class MinecraftServerConnector {
 		$this->query = $query;
 		return $this;
 	}
-	public function getStartPath() {
-		return $this->startPath;
+	public function getStartCommand() {
+		return $this->startCommand;
 	}
-	public function setStartPath($startPath) {
-		$this->startPath = $startPath;
+	public function setStartCommand($startCommand) {
+		$this->startCommand = $startCommand;
 		return $this;
 	}
-	public function getInstallPath() {
-		return $this->installPath;
+	public function getInstallCommand() {
+		return $this->installCommand;
 	}
-	public function setInstallPath($installPath) {
-		$this->installPath = $installPath;
+	public function setInstallCommand($installCommand) {
+		$this->installCommand = $installCommand;
 		return $this;
 	}
 	public function getPath() {
@@ -330,6 +357,14 @@ class MinecraftServerConnector {
 		$this->softwareUrl = $softwareUrl;
 		return $this;
 	}
+	public function getId() {
+		return $this->id;
+	}
+	public function setId($id) {
+		$this->id = $id;
+		return $this;
+	}
+	
 	
 	
 	

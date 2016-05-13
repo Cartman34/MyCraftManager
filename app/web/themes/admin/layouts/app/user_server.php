@@ -32,6 +32,8 @@ $command = 'help';
 // debug('Result', $result);
 // debug('Analyze => '.stringify(count_chars($result, 1)));
 
+// TODO : Change ssh user allows to enter a password to send certificate
+// TODO : Owner can ask to resend certificate by checking a checkbox and entering a password
 ?>
 
 <?php
@@ -124,7 +126,10 @@ if( !$isInstalled ) {
 				<div class="row">
 					<div class="col-sm-8 form-group">
 						<label for="NewMinecraftServerRconPassword">Mot de passe Rcon</label>
+						<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="text" class="form-control" id="MinecraftServerRconPassword" placeholder="Automatique">
+						<?php /*
 						<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="password" class="form-control" id="MinecraftServerRconPassword" placeholder="Automatique">
+						*/ ?>
 					</div>
 					<div class="col-sm-4 form-group">
 						<label for="NewMinecraftServerRconPort">Port Rcon</label>
@@ -153,7 +158,7 @@ if( !$isInstalled ) {
 <!-- 			</p> -->
 			<div class="row">
 				<div class="col-sm-2 text-center">
-					<i class="fa fa-4x fa-power-off" style="color: <?php echo $server->isOnline() ? '#2FCF2E' : '#808080'; ?>;"></i>
+					<i class="fa fa-4x fa-power-off" style="color: <?php echo $server->isStarting() ? '#337ab7' : ($server->isOnline() ? '#2FCF2E' : '#808080'); ?>;"></i>
 				</div>
 				<div class="col-md-5 form-group">
 					<label class="control-label">Démarré le</label>
@@ -166,7 +171,7 @@ if( !$isInstalled ) {
 			</div>
 			
 			<?php
-			if( $server->isonline ) {
+			if( $isOnline ) {
 				?>
 				
 			<div class="row">
@@ -216,15 +221,18 @@ if( !$isInstalled ) {
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'État du serveur', 'footer'=>'
 <div class="panel-footer text-right"><form method="POST">
 	<button name="submitTestServer" type="submit" class="btn btn-default" data-submittext="Test du serveur...">'.MinecraftServer::text('checkServer').'</button>
+	<button name="submitTestInstall" type="submit" class="btn btn-default" data-submittext="Test de l\'installation...">'.MinecraftServer::text('checkInstall').'</button>
 	<button name="submitTestApplication" type="submit" class="btn btn-default" data-submittext="Test de l\'application...">'.MinecraftServer::text('checkApplication').'</button>'.
+// 	($server->isStarted() ? '
 	($server->isOnline() ? '
-		<button name="submitStop" type="submit" class="btn btn-warning" data-submittext="Arrêt en cours...">'.MinecraftServer::text('stop').'</button>' : '
-		<button name="submitStart" type="submit" class="btn btn-primary" data-submittext="Démarrage...">'.MinecraftServer::text('start').'</button>').
+		<button name="submitStopApplication" type="submit" class="btn btn-warning" data-submittext="Arrêt en cours...">'.MinecraftServer::text('stop').'</button>' : '
+		<button name="submitStartApplication" type="submit" class="btn btn-primary" data-submittext="Démarrage...">'.MinecraftServer::text('start').'</button>').
 '</form></div>')); ?>
 	</div>
 	
 	<?php
-	if( $server->isonline ) {
+	if( $server->isStarted() ) {
+// 	if( $server->isonline ) {
 		?>
 	<div class="col-lg-6">
 		<?php HTMLRendering::useLayout('panel-default'); ?>
@@ -344,13 +352,14 @@ $(function() {
 		sendingCommand = true;
 		consoleInput.prop("disabled", true);
 		$(".rcon_alert").remove();
-// 		console.log("Send command => "+command);
+		console.log("Send command => "+command);
 		$.post('<?php echo $server->getConsoleInputLink(); ?>', {"command":command}, function(data) {
 // 		$.post("http://flo.mcm.sowapps.com/user/server/8/console.json", {"command":command}, function(data) {
-// 			console.log("Command success", data);
+			console.log("Command success", data);
 			sendingCommand = false;
-			consoleInput.prop("disabled", false);
 			consoleInput.val("");
+			consoleInput.prop("disabled", false);
+			consoleInput.focus();
 			if( !data ) {
 				return;
 			}
@@ -360,11 +369,12 @@ $(function() {
 		}).fail( function(xhr, textStatus, errorThrown) {
 			sendingCommand = false;
 // 			console.log(xhr, textStatus, errorThrown);
-// 			console.log(xhr.responseJSON);
+			console.log("Command fail", xhr.responseJSON);
 			// There is result and translated one
 			var error = xhr.responseJSON && xhr.responseJSON.code != xhr.responseJSON.description ? xhr.responseJSON.description : 'Une erreur est survenue.';
 			consoleInput.parent().after('<div class="rcon_alert alert alert-danger mt20 mb0" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'+error+'</div>');
 			consoleInput.prop("disabled", false);
+			consoleInput.focus();
 	    });
 	});
 // 	source.onmessage = function (e) {
@@ -379,6 +389,7 @@ $(function() {
 .consolestream {
 	height: 300px;
 	overflow-y: scroll;
+	word-wrap: break-word;
 }
 .consolestream .list-group-item {
 	padding: 4px 8px;
