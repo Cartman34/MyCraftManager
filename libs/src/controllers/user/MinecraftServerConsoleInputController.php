@@ -30,8 +30,21 @@ class MinecraftServerConsoleInputController extends HTTPController {
 			if( !$command ) {
 				throw new UserException('invalidCommand');
 			}
+			list($commandProg) = explode(' ', $command, 2);
+			if( $commandProg === 'help' ) {
+				MinecraftServer::throwException('unavailableCommand');
+			}
 			$minecraft = $server->getConnector();
-			sendRESTfulJSON(nl2br(escapeText(trim($minecraft->sendCommand($command)))));
+			$result = $minecraft->sendCommand($command);
+// 			$result .= ' [';
+// 			foreach( count_chars($result, 1) as $char => $freq ) {
+// 				$result .= ($char ? ', ' : '').$char.' : '.$freq;
+// 			}
+// 			$result .= ']';
+			// New lines are missing due to a MC bug, NOT WORKING THIS WAY
+// 			$result = str_replace(" /", "\n", $result);
+// 			sendRESTfulJSON($result.'/#/'.nl2br(escapeText(trim($result))));
+			sendRESTfulJSON(nl2br(escapeText(trim($result))));
 		} catch( Exception $e ) {
 			sendRESTfulJSON($e);
 		}

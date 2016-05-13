@@ -21,6 +21,9 @@ class SSH2 {
 	protected $publicKeyPath;
 	protected $privateKeyPath;
 	protected $passphrase;
+	protected $currentDirectory;
+// 	protected $term = 'xterm';
+// 	protected $shell;
 	
 	protected $connection;
 	protected $allowingNewFingerprint=false;
@@ -40,6 +43,7 @@ class SSH2 {
 		if( $this->isConnected() ) {
 			return false;
 		}
+		debug('SSH2 connect');
 		$connection = ssh2_connect($this->host, $this->port);
 		if( !$connection ) {
 			throw new Exception('Cannot connect to server');
@@ -73,13 +77,32 @@ class SSH2 {
 // 		return false;
 	}
 
+// 	public function startShell() {
+// 		if( !$this->isConnected() ) {
+// 			$this->connect();
+// 		}
+// 		$this->shell = ssh2_shell($this->connection, $this->term);
+// // 		stream_set_blocking($this->shell, true);
+// 	}
+	
+// 	public function execRaw($cmd) {
+// 		// This solution is not working, we are unable to get content from stream
+// 		if( !$this->shell ) {
+// 			$this->startShell();
+// 		}
+// 		debug('Exec command : '.$cmd); flush();
+// 		fwrite($this->shell, $cmd.';'.PHP_EOL);
+// 		sleep(1);
+// 		return $this->shell;
+// 	}
 	public function execRaw($cmd) {
 		if( !$this->isConnected() ) {
 // 			debug('not connected');
 			$this->connect();
 		}
+		debug('Exec command : '.$cmd);
 		// http://php.net/manual/en/function.ssh2-exec.php
-		$stream = ssh2_exec($this->connection, $cmd);
+		$stream = ssh2_exec($this->connection, ($this->currentDirectory ? 'cd "'.$this->currentDirectory.'"; ' : '').$cmd);
 		if( $stream === false ) {
 			throw new Exception('SSH command failed');
 		}
@@ -92,6 +115,16 @@ class SSH2 {
 // 		}
 // 		$stream = ssh2_exec($this->connection, $cmd);
 		$stream = $this->execRaw($cmd);
+		
+		// Test with ssh2_shell(), never got content from stream
+// 		stream_set_blocking($stream, true);
+// 		$error = '';
+// 		$output = '';
+// 		while( $buffer = fgets($stream) ) {
+// 			flush();
+// 			$output .= $buffer;
+// 		}
+// 		$output = stream_get_contents($stream);
 		
 		$errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
 		$outputStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
@@ -107,10 +140,17 @@ class SSH2 {
 	
 	public function sendCertificate($publicKeyPath) {
 		// TODO : Avoid duplicate
+		// TODO : Use PHP system
+		// http://php.net/manual/fr/function.ssh2-publickey-init.php
+		// http://php.net/manual/fr/function.ssh2-publickey-add.php
 		$this->exec('mkdir -p ~/.ssh; chmod u+rw ~/.ssh ~/.ssh/authorized_keys; echo "'.file_get_contents($publicKeyPath).'" >> ~/.ssh/authorized_keys; chmod go-rwx ~/.ssh ~/.ssh/authorized_keys;');
 	}
 	
 	public function disconnect() {
+// 		if( $this->shell ) {
+// 			fclose($this->shell);
+// 			unset($this->shell);
+// 		}
 		unset($this->connection);
 	}
 
@@ -136,6 +176,10 @@ class SSH2 {
 		$this->publicKeyPath = $publicKeyPath ? $publicKeyPath : $privateKeyPath.'.pub';
 		$this->passphrase = $passphrase;
 		return $this;
+	}
+
+	public function __toString() {
+		return 'SSH2('.$this->getHost().':'.$this->getPort().', '.($this->isConnected() ? 'Connected' : 'Disconnected').')';
 	}
 	
 	public function isConnected() {
@@ -196,7 +240,27 @@ class SSH2 {
 		$this->fingerprint = $fingerprint;
 		return $this;
 	}
+	public function getCurrentDirectory() {
+		return $this->currentDirectory;
+	}
+	public function setCurrentDirectory($currentDirectory) {
+		$this->currentDirectory = $currentDirectory;
+		return $this;
+	}
 	
-	
+// 	public function getShell() {
+// 		return $this->shell;
+// 	}
+// 	public function setShell($shell) {
+// 		$this->shell = $shell;
+// 		return $this;
+// 	}
+// 	public function getTerm() {
+// 		return $this->term;
+// 	}
+// 	public function setTerm($term) {
+// 		$this->term = $term;
+// 		return $this;
+// 	}
 	
 }

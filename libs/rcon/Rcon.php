@@ -97,6 +97,10 @@ class Rcon {
 	public function __destruct() {
 		$this->disconnect();
 	}
+	
+	public function __toString() {
+		return 'Rcon('.$this->getHost().':'.$this->getPort().', '.($this->isConnected() ? 'Connected' : 'Disconnected').')';
+	}
 
 	/**
 	 * @return boolean Whether or not this instance is currently connected to the Rcon server.
@@ -252,6 +256,7 @@ class Rcon {
 			}
 
 // 			debug('$bytes', $bytes);
+// 			debug('$bytes - analyze', stringify(count_chars($body.'', 1)));
 			$packet = unpack("V1id/V1type/a*body", $bytes);
 // 			debug('$packet', $packet);
 
@@ -277,6 +282,8 @@ class Rcon {
 // 		if( !$c ) {
 // 			throw new RuntimeException("Not a RCON server");
 // 		}
+// 		debug('$body', $body);
+// 		debug('$body - analyze', stringify(count_chars($body, 1)));
 
 		return array(
 			'id'	=>  $id,
@@ -398,4 +405,17 @@ class Rcon {
 			}
 		}
 	}
+	public function getHost() {
+		return $this->host;
+	}
+	public function getPort() {
+		return $this->port;
+	}
+	public function getPassword() {
+		return $this->password;
+	}
+	public function getConnection() {
+		return $this->connection;
+	}
+	
 }

@@ -160,9 +160,17 @@ class HTTPRoute extends ControllerRoute {
 		return static::$routes;
 	}
 	
-	public static function getRoute($route, $method=self::METHOD_GET) {
+	public static function getRoute($route, $method=null) {
 // 		$routes	= static::getRoutes();
-		return isset(static::$routes[$route][$method]) ? static::$routes[$route][$method] : null;
+		if( $method ) {
+			return isset(static::$routes[$route][$method]) ? static::$routes[$route][$method] : null;
+		}
+		foreach( static::getKnownMethods() as $method ) {
+			if( isset(static::$routes[$route][$method]) ) {
+				return static::$routes[$route][$method];
+			}
+		}
+		return null;
 	}
 	
 	public static function getKnownMethods() {

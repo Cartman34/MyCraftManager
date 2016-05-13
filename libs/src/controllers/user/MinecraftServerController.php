@@ -49,6 +49,12 @@ class MinecraftServerController extends AdminController {
 				} else {
 					reportWarning(MinecraftServer::text('applicationIsStopped', $server));
 				}
+				
+			} else
+			if( $request->hasData('submitInstallApplication') ) {
+				$minecraft = $server->getConnector();
+				$minecraft->install();
+				reportSuccess(MinecraftServer::text('successInstall', $server));
 			}
 		} catch( UserException $e ) {
 			reportError($e);

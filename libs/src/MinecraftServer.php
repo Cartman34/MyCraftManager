@@ -33,6 +33,8 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	protected static $fields	= null;
 	protected static $validator	= null;
 	protected static $domain	= null;
+	
+	protected $connector;
 
 	public function __toString() {
 		return escapeText($this->name);
@@ -42,8 +44,12 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	 * @return MinecraftServerConnector
 	 */
 	public function getConnector() {
-		$software = $this->getServerSoftware();
-		return new MinecraftServerConnector($this->getSSH(), $this->getRcon(), $this->getMCQuery(), $this->path, $software->starter_path, $software->installer_path);
+		if( !$this->connector ) {
+			$software = $this->getServerSoftware();
+			$this->connector = new MinecraftServerConnector($this->getSSH(), $this->getRcon(), $this->getMCQuery(), $this->path,
+				$software->file_url, $software->starter_path, $software->installer_path, $this->isInstalled());
+		}
+		return $this->connector;
 	}
 
 	/**
@@ -51,6 +57,12 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	 */
 	public function getServerSoftware() {
 		return ServerSoftware::load($this->software_id);
+	}
+
+	public function install() {
+		$minecraft = $this->getConnector();
+		$minecraft->install();
+		$this->install_date = sqlDatetime();
 	}
 
 	public function isInstalled() {
@@ -64,6 +76,14 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function isOnline() {
 		// isOnline implies isStarted
 		return !!$this->isonline;
+	}
+	
+	public function getConsoleStreamLink() {
+		return u('adm_server_console_stream', array('serverID'=>$this->id()));
+	}
+	
+	public function getConsoleInputLink() {
+		return u('adm_server_console_input', array('serverID'=>$this->id()));
 	}
 
 	/**

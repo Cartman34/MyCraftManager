@@ -18,8 +18,8 @@ class MinecraftQuery {
 	const HANDSHAKE = 0x09;
 
 	protected $connection;
+	protected $info = false;
 	protected $players;
-	protected $info;
 	
 	protected $host;
 	protected $port;
@@ -33,6 +33,10 @@ class MinecraftQuery {
 	
 	public function __destruct() {
 		$this->disconnect();
+	}
+	
+	public function __toString() {
+		return 'MCQuery('.$this->getHost().':'.$this->getPort().', '.($this->isConnected() ? 'Connected' : 'Disconnected').')';
 	}
 	
 	public function connect() {
@@ -83,6 +87,7 @@ class MinecraftQuery {
 
 // 	public function connect($ip, $port = 25565, $timeout = 3 )
 	public function collectInformations() {
+		$this->info = new stdClass();
 		$this->connect();
 
 		try {
@@ -98,10 +103,11 @@ class MinecraftQuery {
 			$this->disconnect();
 // 			fclose($this->connection);
 		}
+		return true;
 	}
 
 	public function getInfo() {
-		if( !$this->info ) {
+		if( $this->info === false ) {
 			$this->collectInformations();
 		}
 		return $this->info;
@@ -109,7 +115,7 @@ class MinecraftQuery {
 	}
 
 	public function listPlayers() {
-		if( !$this->players ) {
+		if( $this->info === false ) {
 			$this->collectInformations();
 		}
 		return $this->players;

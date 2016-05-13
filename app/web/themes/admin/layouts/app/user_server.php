@@ -16,7 +16,7 @@ $formData		= array('server'=>$server->all);
 $software		= $server->getServerSoftware();
 $minecraft		= $server->getConnector();
 
-// $command = 'list';
+$command = 'help';
 
 // $rcon = new RconBasic('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
 // // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
@@ -25,11 +25,12 @@ $minecraft		= $server->getConnector();
 // debug('=> '.$rcon->command($command));
 
 // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
-// // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
-// // $rcon = new Rcon('10.0.1.5', 25575, 'YZgtvTSgHhkBZu6mBwVh');
 // $rcon->connect();
 // debug('Send command "'.$command.'"');
-// debug('=> '.$rcon->command($command));
+// $result = $rcon->command($command);
+// debug('Result => '.$result);
+// debug('Result', $result);
+// debug('Analyze => '.stringify(count_chars($result, 1)));
 
 ?>
 
@@ -46,7 +47,7 @@ if( !$isInstalled ) {
 					Pour continuer, votre nouvelle application Minecraft doit être déployée sur votre serveur,
 					elle sera automatiquement installée, configurée et prête à être démarrée par la suite.
 				</p>
-				<button name="submitInstall" type="submit" class="btn btn-success btn-lg" data-submittext="Installation en cours...">Installer</button>
+				<button name="submitInstallApplication" type="submit" class="btn btn-success btn-lg" data-submittext="Installation, cela peut prendre un moment...">Installer</button>
 			</div>
 		
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Installer le serveur')); ?>
@@ -151,7 +152,7 @@ if( !$isInstalled ) {
 <!-- 			Gérez vos projets, enregistrez les ici ! -->
 <!-- 			</p> -->
 			<div class="row">
-				<div class="col-md-2 text-center">
+				<div class="col-sm-2 text-center">
 					<i class="fa fa-4x fa-power-off" style="color: <?php echo $server->isOnline() ? '#2FCF2E' : '#808080'; ?>;"></i>
 				</div>
 				<div class="col-md-5 form-group">
@@ -163,7 +164,55 @@ if( !$isInstalled ) {
 					<p class="form-control-static"><?php echo $server->install_date ? dt($server->install_date) : 'N/C'; ?></p>
 				</div>
 			</div>
-		
+			
+			<?php
+			if( $server->isonline ) {
+				?>
+				
+			<div class="row">
+				<div class="col-md-5 col-md-offset-2 form-group">
+					<label class="control-label">Version</label>
+					<p class="form-control-static"><?php echo escapeText($minecraft->getVersion()); ?></p>
+				</div>
+				<div class="col-md-5 form-group">
+					<label class="control-label">Carte</label>
+					<p class="form-control-static"><?php echo escapeText($minecraft->getMap()); ?></p>
+				</div>
+			</div>
+			<?php
+			/*
+			$serverInfos = $minecraft->getInfos();
+			if( $serverInfos ) {
+				echo '<div class="form-horizontal">';
+				foreach( $serverInfos as $key => $value ) {
+					echo '
+				<div class="form-group">
+					<label class="col-sm-3 control-label">'.$key.'</label>
+					<div class="col-sm-9"><p class="form-control-static">'.escapeText(is_array($value) ? '['.implode(', ', $value).']' : $value).'</p></div>
+				</div>';
+				}
+				echo '</div>';
+			}
+			*/
+			?>
+			
+			<h4>Joueurs connectés (<?php echo $minecraft->getNumPlayer().' / '.$minecraft->getMaxPlayer(); ?>)</h4>
+			<?php
+				$serverPlayers = $minecraft->listPlayers();
+				if( $serverPlayers ) {
+					echo '
+			<ul class="list-group">';
+					foreach( $serverPlayers as $player ) {
+						echo '
+				<li class="list-group-item">'.escapeText($player).'</li>';
+					}
+					echo '
+			</ul>';
+				} else {
+					echo '<p>Aucun joueur connecté.</p>';	
+				}
+			}
+			?>
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'État du serveur', 'footer'=>'
 <div class="panel-footer text-right"><form method="POST">
 	<button name="submitTestServer" type="submit" class="btn btn-default" data-submittext="Test du serveur...">'.MinecraftServer::text('checkServer').'</button>
@@ -174,6 +223,9 @@ if( !$isInstalled ) {
 '</form></div>')); ?>
 	</div>
 	
+	<?php
+	if( $server->isonline ) {
+		?>
 	<div class="col-lg-6">
 		<?php HTMLRendering::useLayout('panel-default'); ?>
 		
@@ -188,88 +240,130 @@ if( !$isInstalled ) {
 		
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Console')); ?>
 	</div>
+		<?php
+	}
+	?>
 <script type="text/javascript">
 //*
 $(function() {
 	//https://developer.mozilla.org/fr/docs/Server-sent_events/Using_server-sent_events
 // 	$(".consolestream")
-	var source = new EventSource('http://flo.mcm.sowapps.com/user/server/8/console.html');
+	var consoleTitle = $(".consolestream").closest(".panel").find(".panel-title").first();
+	if( !consoleTitle.length ) {
+		return;
+	}
 	var consolePing = $('<small class="ml6"></small>');
 	var consoleIcon = $('<i class="fa fa-fw fa-power-off ml6" style="color: #808080;" data-offline="#808080" data-online="#2FCF2E"></i>');
-	var consoleTitle = $(".consolestream").closest(".panel").find(".panel-title").first();
+	var consoleStartButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Connecter</button>');
+	var consoleStopButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Déconnecter</button>');
+	var consoleList = $(".consolestream").first();
+	var scrollMax = consoleList.height();
+	
 	consoleTitle.append(consoleIcon);
 	consoleTitle.append(consolePing);
-	var consoleList = $(".consolestream").first();
-	var attachedScroll = true;
-	var scrollMax = consoleList.height();
-// 	console.log('consoleList.height', consoleList.height());
-// 	console.log('consoleList.innerHeight', consoleList.innerHeight());
-// 	console.log('consoleList.outerHeight', consoleList.outerHeight());
-// 	console.log("source", source);
-	source.addEventListener('message', function(e) {
-// 		console.log(e.data);
-		consoleList.append('<li class="list-group-item">'+e.data+'</li>');
-		if( attachedScroll ) {
-			consoleList.scrollTop(consoleList[0].scrollHeight);
+	consoleTitle.append(consoleStartButton);
+	consoleTitle.append(consoleStopButton.hide());
+	
+	var source;
+	function startConsole() {
+		consoleStartButton.hide();
+		source = new EventSource('<?php echo $server->getConsoleStreamLink(); ?>');
+// 		source = new EventSource('http://flo.mcm.sowapps.com/user/server/8/console.html');
+		var attachedScroll = true;
+	// 	console.log('consoleList.height', consoleList.height());
+	// 	console.log('consoleList.innerHeight', consoleList.innerHeight());
+	// 	console.log('consoleList.outerHeight', consoleList.outerHeight());
+	// 	console.log("source", source);
+		source.addEventListener('message', function(e) {
+// 			console.log(e.data);
+			consoleList.append('<li class="list-group-item">'+e.data+'</li>');
+			if( attachedScroll ) {
+				consoleList.scrollTop(consoleList[0].scrollHeight);
+			}
+		}, false);
+		source.addEventListener('ping', function(e) {
+			// Connection was opened.
+			var now = Date.now();
+	// 		console.log("Ping - result", e);
+			consolePing.text((now-e.data)+"ms");
+	// 		console.log("Ping - ping", (e.data-now)*1000);
+		}, false);
+	
+		source.addEventListener('open', function(e) {
+			// Connection was opened.
+	// 		console.log("Open");
+			consoleIcon.css("color", consoleIcon.data("online"));
+		}, false);
+	
+		source.addEventListener('error', function(e) {
+			console.log("Error", e);
+			if (e.readyState == EventSource.CLOSED) {
+				// Connection was closed.
+				consoleIcon.css("color", consoleIcon.data("offline"));
+				consolePing.text("");
+			}
+		}, false);
+		
+		consoleStopButton.show();
+	}
+	
+	function stopConsole() {
+		if( !source ) {
+			return;
 		}
-	}, false);
-	source.addEventListener('ping', function(e) {
-		// Connection was opened.
-		var now = Date.now();
-// 		console.log("Ping - result", e);
-		consolePing.text((now-e.data)+"ms");
-// 		console.log("Ping - ping", (e.data-now)*1000);
-	}, false);
-
-	source.addEventListener('open', function(e) {
-		// Connection was opened.
-// 		console.log("Open");
-		consoleIcon.css("color", consoleIcon.data("online"));
-	}, false);
-
-	source.addEventListener('error', function(e) {
-		console.log("Error", e);
-		if (e.readyState == EventSource.CLOSED) {
-			// Connection was closed.
-			consoleIcon.css("color", consoleIcon.data("offline"));
-			consolePing.text("");
-		}
-	}, false);
-
+		consoleStopButton.hide();
+		source.close();
+		consoleList.empty();
+		consolePing.text("");
+		consoleIcon.css("color", consoleIcon.data("offline"));
+		consoleStartButton.show();
+	}
+	
+	consoleStartButton.click(startConsole);
+	consoleStopButton.click(stopConsole);
+	
 	consoleList.scroll(function(e) {
-// 		console.log("scroll", e);
-// 		console.log("consoleList.scrollHeight", consoleList[0].scrollHeight);
 		var scrollDelta = consoleList[0].scrollHeight-consoleList.height()-consoleList.scrollTop();
-// 		console.log("consoleList.scrollDelta => "+scrollDelta);
 		attachedScroll = scrollDelta < scrollMax;
-// 		console.log('consoleList.height', consoleList.height());
-// 		console.log('consoleList.innerHeight', consoleList.innerHeight());
-// 		console.log('consoleList.outerHeight', consoleList.outerHeight());
 	});
-
+	
 	var consoleInput = $("#ConsoleInput");
 	var consoleSendBtn = $("#ConsoleSendButton");
 	consoleInput.pressEnter(function() {
 		consoleSendBtn.click();
 	});
+	var sendingCommand;
 	consoleSendBtn.click(function() {
+		if( sendingCommand ) {
+			return;
+		}
 		var command = consoleInput.val();
 		if( command.length < 2 ) {
 			return;
 		}
+		sendingCommand = true;
 		consoleInput.prop("disabled", true);
-		console.log("Send command => "+command);
-		$.post("http://flo.mcm.sowapps.com/user/server/8/console.json", {"command":command}, function(data) {
+		$(".rcon_alert").remove();
+// 		console.log("Send command => "+command);
+		$.post('<?php echo $server->getConsoleInputLink(); ?>', {"command":command}, function(data) {
+// 		$.post("http://flo.mcm.sowapps.com/user/server/8/console.json", {"command":command}, function(data) {
 // 			console.log("Command success", data);
+			sendingCommand = false;
 			consoleInput.prop("disabled", false);
 			consoleInput.val("");
-			$(".rcon_alert").remove();
 			if( !data ) {
 				return;
 			}
-			console.log("data.length => "+data.length);
+// 			console.log("data ", data);
+// 			console.log("data.length => "+data.length);
 			consoleInput.parent().after('<div class="rcon_alert alert alert-info mt20 mb0" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'+data+'</div>');
 		}).fail( function(xhr, textStatus, errorThrown) {
+			sendingCommand = false;
+// 			console.log(xhr, textStatus, errorThrown);
+// 			console.log(xhr.responseJSON);
+			// There is result and translated one
+			var error = xhr.responseJSON && xhr.responseJSON.code != xhr.responseJSON.description ? xhr.responseJSON.description : 'Une erreur est survenue.';
+			consoleInput.parent().after('<div class="rcon_alert alert alert-danger mt20 mb0" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'+error+'</div>');
 			consoleInput.prop("disabled", false);
 	    });
 	});
@@ -293,6 +387,7 @@ $(function() {
 </style>
 
 </div>
+<?php /*
 <div class="row">
 	<div class="col-lg-6">
 		<form method="POST">
@@ -323,14 +418,11 @@ $(function() {
 		?>
 		<ul class="list-group"></ul>
 		
-		<?php HTMLRendering::endCurrentLayout(array('title'=>'Modifier les paramètres du serveur', 'footer'=>'
-<div class="panel-footer text-right">
-	<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	<button name="submitUpdate" type="submit" class="btn btn-primary" data-submittext="Enregistrement...">'.t('save').'</button>
-</div>')); ?>
+		<?php HTMLRendering::endCurrentLayout(array('title'=>'Modifier les paramètres du serveur'); ?>
 		</form>
 	</div>
 </div>
+*/ ?>
 	<?php
 // }
 
