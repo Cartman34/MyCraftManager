@@ -10,19 +10,20 @@ class MinecraftServerController extends AdminController {
 	public function run(HTTPRequest $request) {
 
 		/* @var $USER User */
-		global $USER;
+// 		global $USER;
 
 		/* @var $serverUser MinecraftServerUser */
 		/* @var $server MinecraftServer */
 		
 // 		debug('TEST_DEBUG');
-		$user	= &$USER;
+// 		$user	= &$USER;
 		
 // 		$serverDomain	= MinecraftServer::getDomain();
 		
 		$serverID	= $request->getPathValue('serverID');
 		$server		= MinecraftServer::load($serverID, false);
 		
+		$this->addRouteToBreadcrumb(ROUTE_USER_SERVERS);
 		$this->addThisToBreadcrumb($server.'');
 		
 // 		if( !$user->canServerManage(CRAC_CONTEXT_APPLICATION, $server) ) {
@@ -31,7 +32,9 @@ class MinecraftServerController extends AdminController {
 		
 		try {
 			if( $request->hasData('submitUpdateServer') ) {
-				$server->update($request->getData('server'), array('name'));
+				$server->update($request->getData('server'), array(
+					'name', 'ssh_host', 'ssh_port', 'ssh_user', 'path', 'rcon_port', 'rcon_password', 'query_port'
+				));
 				reportSuccess(MinecraftServer::text('successUpdate', $server));
 				
 			} else
@@ -92,7 +95,7 @@ class MinecraftServerController extends AdminController {
 		}
 		
 		return $this->renderHTML('app/user_server', array(
-			'user'			=> $user,
+// 			'user'			=> $user,
 			'server'		=> $server,
 			'PageTitle'		=> $server.''
 		));

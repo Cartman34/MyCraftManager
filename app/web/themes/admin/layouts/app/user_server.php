@@ -64,83 +64,94 @@ if( !$isInstalled ) {
 	<div class="col-lg-6">
 		<form method="POST">
 		<?php HTMLRendering::useLayout('panel-default'); ?>
+
+			<div style="display: none;">
+				<input type="text" autocomplete="new-password" />
+				<input type="password" autocomplete="new-password" />
+			</div>
 		
 				<p class="help-block">
-					Veillez à ce que la configuration soit correcte et permette à MyCraft Manager d'accéder à votre serveur.
-				</p>
-				<div class="row">
-					<div class="col-md-6 form-group">
-						<label class="control-label" for="NewMinecraftServerName">Nom</label>
-						<input<?php _inputValue('server/name'); ?> name="server[name]" type="text" class="form-control" id="MinecraftServerName" required>
-					</div>
-					<div class="col-md-6 form-group">
-						<label class="control-label">Application</label>
-						<p class="form-control-static"><?php echo $software; ?></p>
-						<?php /*
-						<select name="server[software_id]" class="select form-control" id="MinecraftServerSoftware" required>
-							<?php _htmlOptions('server/software_id', ServerSoftware::listByName()->run(), $formData['server']['software_id'], OPT_PERMANENTOBJECT); ?>
-						</select>
-						*/ ?>
-					</div>
+				Veillez à ce que la configuration soit correcte et permette à MyCraft Manager d'accéder à votre serveur.
+			</p>
+			<div class="row">
+				<div class="col-md-6 form-group">
+					<label class="control-label" for="NewMinecraftServerName">Nom</label>
+					<input<?php _inputValue('server/name'); ?> name="server[name]" type="text" class="form-control" id="MinecraftServerName" required>
 				</div>
-				<p class="help-block">
-					L'application doit se connecter à votre serveur, pour préserver la sécurité de votre serveur,
-					le mot de passe n'a été pas conservé, un certificat a été laissé sur votre serveur.
-				</p>
-				<div class="row">
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerSSHHost">Serveur SSH</label>
-						<input<?php _inputValue('server/ssh_host'); ?> name="server[ssh_host]" type="text" class="form-control" id="MinecraftServerSSHHost" required>
-					</div>
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerSSHPort">Port SSH</label>
-						<input<?php _inputValue('server/ssh_port'); ?> name="server[ssh_port]" type="text" class="form-control" id="MinecraftServerSSHPort" placeholder="22">
-					</div>
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerSSHUser">Utilisateur SSH</label>
-						<input<?php _inputValue('server/ssh_user'); ?> name="server[ssh_user]" type="text" class="form-control" id="MinecraftServerSSHUser" required>
-					</div>
+				<div class="col-md-6 form-group">
+					<label class="control-label">Application</label>
+					<p class="form-control-static"><?php echo $software; ?></p>
+					<?php /*
+					<select name="server[software_id]" class="select form-control" id="MinecraftServerSoftware" required>
+						<?php _htmlOptions('server/software_id', ServerSoftware::listByName()->run(), $formData['server']['software_id'], OPT_PERMANENTOBJECT); ?>
+					</select>
+					*/ ?>
 				</div>
-				<?php /*
-				<div class="row">
-					<div class="col-sm-8 form-group">
-						<label for="NewMinecraftServerSSHUser">Utilisateur SSH</label>
-						<input<?php _inputValue('server/ssh_user'); ?> name="server[ssh_user]" type="text" class="form-control" id="MinecraftServerSSHUser" required>
-					</div>
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerSSHPassword">Mot de passe SSH</label>
-						<input<?php _inputValue('server/ssh_password'); ?> name="server[ssh_password]" type="password" class="form-control" id="MinecraftServerSSHPassword">
-					</div>
+			</div>
+			<p class="help-block">
+				L'application doit se connecter à votre serveur, pour préserver la sécurité de votre serveur,
+				le mot de passe n'a été pas conservé, un certificat a été laissé sur votre serveur.
+			</p>
+			<div class="row">
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerSSHHost">Serveur SSH</label>
+					<input<?php _inputValue('server/ssh_host'); ?> name="server[ssh_host]" type="text" class="form-control" id="MinecraftServerSSHHost" required>
 				</div>
-				*/ ?>
-				<div class="row">
-					<div class="col-sm-8 form-group">
-						<label for="NewMinecraftServerPath">Chemin sur le serveur</label>
-						<input<?php _inputValue('server/path'); ?> name="server[path]" type="text" class="form-control" id="MinecraftServerPath" placeholder="Chemin vers le dossier où installer l'application">
-					</div>
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerQueryPort">Port Query</label>
-						<input<?php _inputValue('server/query_port'); ?> name="server[query_port]" type="text" class="form-control" id="MinecraftServerQueryPort" placeholder="25565">
-					</div>
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerSSHPort">Port SSH</label>
+					<input<?php _inputValue('server/ssh_port'); ?> name="server[ssh_port]" type="text" class="form-control" id="MinecraftServerSSHPort" placeholder="22">
 				</div>
-				<div class="row">
-					<div class="col-sm-8 form-group">
-						<label for="NewMinecraftServerRconPassword">Mot de passe Rcon</label>
-						<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="text" class="form-control" id="MinecraftServerRconPassword" placeholder="Automatique">
-						<?php /*
-						<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="password" class="form-control" id="MinecraftServerRconPassword" placeholder="Automatique">
-						*/ ?>
-					</div>
-					<div class="col-sm-4 form-group">
-						<label for="NewMinecraftServerRconPort">Port Rcon</label>
-						<input<?php _inputValue('server/rcon_port'); ?> name="server[rcon_port]" type="text" class="form-control" id="MinecraftServerRconPort" placeholder="25575">
-					</div>
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerSSHUser">Utilisateur SSH</label>
+					<input<?php _inputValue('server/ssh_user'); ?> name="server[ssh_user]" type="text" class="form-control" id="MinecraftServerSSHUser" required>
 				</div>
+			</div>
+			<?php /*
+			<div class="row">
+				<div class="col-sm-8 form-group">
+					<label for="NewMinecraftServerSSHUser">Utilisateur SSH</label>
+					<input<?php _inputValue('server/ssh_user'); ?> name="server[ssh_user]" type="text" class="form-control" id="MinecraftServerSSHUser" required>
+				</div>
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerSSHPassword">Mot de passe SSH</label>
+					<input<?php _inputValue('server/ssh_password'); ?> name="server[ssh_password]" type="password" class="form-control" id="MinecraftServerSSHPassword">
+				</div>
+			</div>
+			*/ ?>
+			<div class="row">
+				<div class="col-sm-8 form-group">
+					<label for="NewMinecraftServerPath">Chemin sur le serveur</label>
+					<input<?php _inputValue('server/path'); ?> name="server[path]" type="text" class="form-control" id="MinecraftServerPath" placeholder="Chemin vers le dossier où installer l'application">
+				</div>
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerQueryPort">Port Query</label>
+					<input<?php _inputValue('server/query_port'); ?> name="server[query_port]" type="text" class="form-control" id="MinecraftServerQueryPort" placeholder="25565" autocomplete="new-password">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-8 form-group">
+					<label for="NewMinecraftServerRconPassword">Mot de passe Rcon</label>
+					<div class="input-group">
+						<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="password" class="form-control showpassword" id="MinecraftServerRconPassword" placeholder="Automatique" autocomplete="new-password">
+						<span class="input-group-btn">
+							<button class="btn btn-default showbtn" title="Voir le mot de passe" type="button"><i class="fa fa-eye"></i></button>
+							<button class="btn btn-default hidebtn" title="Masquer le mot de passe" type="button" style="display: none;"><i class="fa fa-eye-slash"></i></button>
+						</span>
+					</div>
+					<?php /*
+					<input<?php _inputValue('server/rcon_password'); ?> name="server[rcon_password]" type="password" class="form-control" id="MinecraftServerRconPassword" placeholder="Automatique">
+					*/ ?>
+				</div>
+				<div class="col-sm-4 form-group">
+					<label for="NewMinecraftServerRconPort">Port Rcon</label>
+					<input<?php _inputValue('server/rcon_port'); ?> name="server[rcon_port]" type="text" class="form-control" id="MinecraftServerRconPort" placeholder="25575">
+				</div>
+			</div>
 		
 		<?php HTMLRendering::endCurrentLayout(array('title'=>'Modifier les paramètres du serveur', 'footer'=>'
 <div class="panel-footer text-right">
 	<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-	<button name="submitUpdate" type="submit" class="btn btn-primary" data-submittext="Enregistrement...">'.t('save').'</button>
+	<button name="submitUpdateServer" type="submit" class="btn btn-primary" data-submittext="Enregistrement...">'.t('save').'</button>
 </div>')); ?>
 		</form>
 	</div>
@@ -201,20 +212,24 @@ if( !$isInstalled ) {
 			*/
 			?>
 			
-			<h4>Joueurs connectés (<?php echo $minecraft->getNumPlayer().' / '.$minecraft->getMaxPlayer(); ?>)</h4>
+			<h4>Joueurs connectés (<span class="playercount"><?php echo $minecraft->getNumPlayer().'</span> / '.$minecraft->getMaxPlayer(); ?>)</h4>
 			<?php
 				$serverPlayers = $minecraft->listPlayers();
 				if( $serverPlayers ) {
 					echo '
-			<ul class="list-group">';
+			<ul class="list-group playerslist">';
 					foreach( $serverPlayers as $player ) {
 						echo '
 				<li class="list-group-item">'.escapeText($player).'</li>';
 					}
 					echo '
 			</ul>';
+					echo '
+			<p class="noplayer" style="display: none;">Aucun joueur connecté.</p>';
 				} else {
-					echo '<p>Aucun joueur connecté.</p>';	
+					echo '
+			<ul class="list-group playerslist" style="display: none;"></ul>
+			<p class="noplayer">Aucun joueur connecté.</p>';
 				}
 			}
 			?>
@@ -260,15 +275,19 @@ $(function() {
 	if( !consoleTitle.length ) {
 		return;
 	}
-	var consolePing = $('<small class="ml6"></small>');
+// 	var consolePing = $('<small class="ml6"></small>');
 	var consoleIcon = $('<i class="fa fa-fw fa-power-off ml6" style="color: #808080;" data-offline="#808080" data-online="#2FCF2E"></i>');
 	var consoleStartButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Connecter</button>');
 	var consoleStopButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Déconnecter</button>');
 	var consoleList = $(".consolestream").first();
 	var scrollMax = consoleList.height();
 	
+	var playerCount = $(".playercount");
+	var playersList = $(".playerslist").first();
+	var playersNone = $(".noplayer");
+	
 	consoleTitle.append(consoleIcon);
-	consoleTitle.append(consolePing);
+// 	consoleTitle.append(consolePing);
 	consoleTitle.append(consoleStartButton);
 	consoleTitle.append(consoleStopButton.hide());
 	
@@ -289,13 +308,41 @@ $(function() {
 				consoleList.scrollTop(consoleList[0].scrollHeight);
 			}
 		}, false);
-		source.addEventListener('ping', function(e) {
-			// Connection was opened.
-			var now = Date.now();
-	// 		console.log("Ping - result", e);
-			consolePing.text((now-e.data)+"ms");
-	// 		console.log("Ping - ping", (e.data-now)*1000);
+		
+		source.addEventListener('players', function(e) {
+// 			console.log(e.data, e);
+			var players = JSON.parse(e.data);
+// 			console.log("players", players);
+			var c = 0;
+			playersList.empty();
+			for( var k in players ) {
+				var player = players[k];
+// 				console.log("isString(player) ", typeof player, player);
+				if( isString(player) ) {
+// 					console.log("Append "+player);
+					playersList.append('<li class="list-group-item">'+player+'</li>');
+					c++;
+				}
+			}
+// 			console.log("Number fo players online ? "+c);
+			if( c ) {
+				playersNone.filter(":visible").hide();
+				playersList.filter(":hidden").show();
+			} else {
+				playersNone.filter(":hidden").show();
+				playersList.filter(":visible").hide();
+			}
+			playerCount.text(c);
+			
 		}, false);
+		
+// 		source.addEventListener('ping', function(e) {
+// 			// Connection was opened.
+// 			var now = Date.now();
+// 	// 		console.log("Ping - result", e);
+// 			consolePing.text((now-e.data)+"ms");
+// 	// 		console.log("Ping - ping", (e.data-now)*1000);
+// 		}, false);
 	
 		source.addEventListener('open', function(e) {
 			// Connection was opened.
@@ -382,6 +429,23 @@ $(function() {
 // // 		var message = JSON.parse(e.data);
 // 		// handle message
 // 	};
+	
+	$(".showpassword").each(function() {
+		var input = $(this);
+		var showBtn = input.next().find(".showbtn");
+		var hideBtn = input.next().find(".hidebtn");
+		console.log("showpassword", showBtn, input);
+		showBtn.click(function() {
+			input.attr("type", "text");
+			showBtn.hide();
+			hideBtn.show();
+		});
+		hideBtn.click(function() {
+			input.attr("type", "password");
+			showBtn.show();
+			hideBtn.hide();
+		});
+	});
 });
 //* /
 </script>
@@ -394,6 +458,10 @@ $(function() {
 .consolestream .list-group-item {
 	padding: 4px 8px;
 	border: none;
+}
+.input-group-btn:last-child>.btn.showbtn:not(:last-child):not(.dropdown-toggle) {
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 </style>
 

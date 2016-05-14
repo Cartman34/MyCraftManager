@@ -154,7 +154,7 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function getMCQuery() {
 		if( !$this->mcQuery ) {
 // 			debug('MinecraftServer', $this);
-			$this->mcQuery = new MinecraftQuery($this->ssh_host, $this->query_port ? $this->query_port : 25565);
+			$this->mcQuery = new MinecraftQuery($this->getHost(), $this->getQueryPort());
 		}
 		return $this->mcQuery;
 	}
@@ -186,7 +186,7 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function getRcon() {
 		if( !$this->rcon ) {
 // 			debug('MinecraftServer', $this);
-			$this->rcon = new Rcon($this->ssh_host, $this->rcon_port ? $this->rcon_port : 25575, $this->rcon_password);
+			$this->rcon = new Rcon($this->getHost(), $this->getRconPort(), $this->getRconPassword());
 		}
 		return $this->rcon;
 	}
@@ -219,9 +219,9 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 	public function getSSH() {
 		if( !$this->ssh ) {
 // 			debug('MinecraftServer', $this);
-			$this->ssh = new SSH2($this->ssh_host, $this->ssh_port ? $this->ssh_port : 22, $this->ssh_fingerprint);
+			$this->ssh = new SSH2($this->getSSHHost(), $this->getSSHPort(), $this->ssh_fingerprint);
 			if( $this->ssh_user ) {
-				$this->ssh->setCertificateAuthentication($this->ssh_user, $this->getPrivateKeyPath(), $this->getPublicKeyPath());
+				$this->ssh->setCertificateAuthentication($this->getSSHUser(), $this->getPrivateKeyPath(), $this->getPublicKeyPath());
 			}
 		}
 		return $this->ssh;
@@ -345,7 +345,48 @@ view-distance=10
 EOF;
 		return $config;	
 	}
-
-
+	
+	public function getSlug() {
+		return $this->slug;
+	}
+	public function getName() {
+		return $this->name;
+	}
+	public function getPath() {
+		return $this->path;
+	}
+	public function getHost() {
+		return $this->getSSHHost();
+	}
+	public function getSSHHost() {
+		return $this->ssh_host;
+	}
+	public function getSSHPort() {
+		return $this->ssh_port ? $this->ssh_port : 22;
+// 		return $this->ssh_port;
+	}
+	public function getSSHUser() {
+		return $this->ssh_user;
+	}
+	public function getRconPort() {
+		return $this->rcon_port ? $this->rcon_port : 25575;
+// 		return $this->rcon_port;
+	}
+	public function getRconPassword() {
+		return $this->rcon_password;
+	}
+	public function getQueryPort() {
+		return $this->query_port ? $this->query_port : 25565;
+// 		return $this->query_port;
+	}
+	public function getPid() {
+		return $this->pid;
+	}
+	public function getInstallDate() {
+		return $this->install_date;
+	}
+	public function getStartDate() {
+		return $this->start_date;
+	}
 }
 MinecraftServer::init();

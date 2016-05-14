@@ -73,41 +73,56 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 
 				$i = 0;
 				$missed = 0;
-				do {
-					$line = fgets($stream);
-					
-					if( $line ) {
-						// Filter
-// 						echo "data: ".escapeText(!!strstr($line, 'RCON Listener'))."\n";
-// 						if( strstr($line, 'RCON Listener') ) {
-// 						}
-						if( !strstr($line, 'RCON Listener') ) {
-							echo "data: ".str_replace("\n", '<br>', escapeText($line))."\n\n";
-							flush();
-// 						} else {
-// 							echo "data: Contains listener\n\n";
-// 							flush();
-						}
-						$missed = 0;
-					} else {
-						$missed++;
-						if( $missed >= 10 ) {
-							// Time out 10 and test connection again if aborted
+				try {
+					do {
+						$line = fgets($stream);
+						
+						if( $line ) {
+							// Filter
+	// 						echo "data: ".escapeText(!!strstr($line, 'RCON Listener'))."\n";
+	// 						if( strstr($line, 'RCON Listener') ) {
+	// 						}
+							if( !strstr($line, 'RCON Listener') ) {
+								echo "data: ".str_replace("\n", '<br>', escapeText($line))."\n\n";
+								flush();
+	// 						} else {
+	// 							echo "data: Contains listener\n\n";
+	// 							flush();
+							}
 							$missed = 0;
-							echo "event: ping\n";//Require something sent
-// 							echo "data: ".microtime(true)."\n\n";//Require something sent
-							echo "data: ".round(microtime(true)*1000)."\n\n";//Require something sent
-// 							echo "data: ".date(DATE_ISO8601)."\n\n";//Require something sent
-// 							echo "\n\n";//Require something sent
-// 							echo "\x00";//Require something sent
-							flush();
+						} else {
+							$missed++;
+							if( $missed >= 10 ) {
+								// Time out 10 and test connection again if aborted
+								$missed = 0;
+								echo "event: status\n";//Require something sent
+								echo "data: ok\n\n";//Require something sent
+	// 							echo "event: ping\n";//Require something sent
+	// 							echo "data: ".round(microtime(true)*1000)."\n\n";//Require something sent
+	// 							echo "data: ".microtime(true)."\n\n";//Require something sent
+	// 							echo "data: ".date(DATE_ISO8601)."\n\n";//Require something sent
+	// 							echo "\n\n";//Require something sent
+	// 							echo "\x00";//Require something sent
+								flush();
+							}
+							sleep(1);
+	// 							log_debug('Always connected at '.date('r').', status => '.connection_status());
 						}
-						sleep(1);
-// 							log_debug('Always connected at '.date('r').', status => '.connection_status());
-					}
-				} while( !connection_aborted() );
-// 					debug('Connection aborted by user at '.date('r'));
-// 					log_debug('Connection aborted by user at '.date('r'));
+						
+						// Sometimes it just happens
+						if( $i >= 50 ) {
+							echo "event: players\n";//Require something sent
+							echo "data: ".json_encode($minecraft->listPlayers(true))."\n\n";//Require something sent
+							$i = 0;
+						}
+						$i++;
+					} while( !connection_aborted() );
+	// 					debug('Connection aborted by user at '.date('r'));
+	// 					log_debug('Connection aborted by user at '.date('r'));
+				} catch ( Exception $e ) {
+					echo "event: status\n";//Require something sent
+					echo "data: disconnected\n\n";//Require something sent
+				}
 				fclose($stream);
 				$minecraft->disconnect();
 			}

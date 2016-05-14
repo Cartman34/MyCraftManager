@@ -216,25 +216,29 @@ class MinecraftServerConnector {
 	/* *** Application *** */
 
 	protected $players;
-	public function listPlayers() {
+	public function listPlayers($refresh=false) {
 		if( !$this->isInstalled() || !$this->isStarted() ) {
 			return array();
 		}
-		if( $this->players === null ) {
-			$this->getInfos();// Connect & ensure validity
+		if( $this->players === null || $refresh ) {
+			$this->getInfos($refresh);// Connect & ensure validity
 			$this->players = $this->getQuery()->listPlayers();
 		}
 		return $this->players;
 	}
 	
 	protected $infos;
-	public function getInfos() {
+	public function getInfos($refresh=false) {
 		if( !$this->isInstalled() || !$this->isStarted() ) {
 			return null;
 		}
-		if( $this->infos === null ) {
+		if( $this->infos === null || $refresh ) {
 			try {
-				$this->infos = $this->getQuery()->getInfo();
+				$mcQuery = $this->getQuery();
+				if( $refresh ) {
+					$mcQuery->collectInformations();
+				}
+				$this->infos = $mcQuery->getInfo();
 				if( empty($this->infos) || empty($this->infos->hostname) ) {
 					$this->started = false;
 				}

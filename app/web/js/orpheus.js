@@ -177,6 +177,10 @@ function isScalar(obj) {
 	return (/string|number|boolean/).test(typeof obj);
 }
 
+function isString(v) {
+	return typeof(v) === 'string';
+}
+
 function isObject(v) {
 	return v != null && typeof(v) === 'object';
 }

@@ -107,7 +107,7 @@ class MinecraftQuery {
 	}
 
 	public function getInfo() {
-		if( $this->info === false ) {
+		if( $this->info === false || $refresh ) {
 			$this->collectInformations();
 		}
 		return $this->info;
@@ -153,7 +153,7 @@ class MinecraftQuery {
 			throw new Exception("Failed to parse server's response.");
 		}
 
-		$players = substr($data[1], 0, -2 );
+		$players = substr($data[1], 0, -2);
 		$data    = explode("\x00", $data[0]);
 
 		// array with known keys in order to validate the result
