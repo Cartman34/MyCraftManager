@@ -176,6 +176,7 @@ abstract class Rendering {
 		self::checkRendering();
 		if( !isset(self::$rendering) ) { return false; }
 		if( $env === NULL ) { $env = $GLOBALS; }
+// 		debug('doDisplay('.$model.', $env)', array_keys($env));
 		self::$rendering->display($model, $env);
 		return true;
 	}
@@ -227,6 +228,7 @@ abstract class Rendering {
 // 		text(__FILE__.':'.__LINE__);
 // 		$env	= $GLOBALS;
 		$env['Content']	= ob_get_clean();// Ends and returns
+// 		debug('$env', array_keys($env));
 // 		$env['Content'] = ob_get_flush();// Returns and displays
 // 		text(__FILE__.':'.__LINE__);
 		static::doDisplay(array_pop(static::$layoutStack), $env);

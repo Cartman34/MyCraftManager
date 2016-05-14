@@ -6,7 +6,13 @@
 /* @var HTTPRoute $Route */
 /* @var User $USER */
 
-global $NO_MODULE_TITLE, $ModuleTitle;
+/* Parameters
+ * 
+ * $PageTitle
+ * $NoContentTitle
+ * $ContentTitle
+ */
+// global $NoContentTitle;
 
 $routeName = $Controller->getRouteName();
 /*
@@ -204,9 +210,10 @@ foreach(HTMLRendering::listCSSURLs() as $url) {
 			<div class="row">
 				<div class="col-lg-12">
 					<?php
-					if( empty($NO_MODULE_TITLE) ) {
+// 					debug('$ContentTitle', $ContentTitle);
+					if( empty($NoContentTitle) ) {
 						?>
-					<h1 class="page-header"><?php echo isset($ModuleTitle) ? $ModuleTitle : t(isset($titleRoute) ? $titleRoute : $routeName); ?> <small><?php _t((isset($titleRoute) ? $titleRoute : $routeName).'_legend'); ?></small></h1>
+					<h1 class="page-header"><?php echo isset($ContentTitle) ? $ContentTitle : t(isset($titleRoute) ? $titleRoute : $routeName); ?> <small><?php _t((isset($titleRoute) ? $titleRoute : $routeName).'_legend'); ?></small></h1>
 					<?php
 					}
 					if( !empty($Breadcrumb) ) {

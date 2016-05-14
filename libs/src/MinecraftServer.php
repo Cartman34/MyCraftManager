@@ -134,14 +134,6 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		// isOnline implies isStarted
 		return !!$this->isonline;
 	}
-	
-	public function getConsoleStreamLink() {
-		return u('adm_server_console_stream', array('serverID'=>$this->id()));
-	}
-	
-	public function getConsoleInputLink() {
-		return u('adm_server_console_input', array('serverID'=>$this->id()));
-	}
 
 	/**
 	 * @var MinecraftQuery $mcQuery
@@ -205,7 +197,7 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 // 	}
 	
 	public function testIsOnline() {
-		$this->isonline = $this->getConnector()->isStarted();
+		return $this->isonline = $this->getConnector()->isStarted();
 	}
 
 	/**
@@ -273,8 +265,11 @@ class MinecraftServer extends PermanentEntity implements FixtureInterface {
 		if( empty($input['ssh_password']) ) {
 			static::throwException('invalidSSHPassword');
 		}
+		if( !empty($input['ssh_host']) ) {
+			$input['server_ip'] = !is_ip($input['ssh_host']) ? gethostbyname($input['ssh_host']) : $input['ssh_host'];
+		}
 		$server = MinecraftServer::createAndGet($input, array(
-			'name', 'software_id', 'ssh_host', 'ssh_port', 'ssh_user', 'path', 'rcon_port', 'rcon_password', 'query_port'
+			'name', 'software_id', 'server_ip', 'ssh_host', 'ssh_port', 'ssh_user', 'path', 'rcon_port', 'rcon_password', 'query_port'
 // 			'name', 'software_id', 'ssh_host', 'ssh_port', 'ssh_user', 'ssh_password', 'path', 'rcon_port', 'rcon_password', 'query_port'
 		));
 		$ssh = $server->getSSH();
@@ -344,6 +339,18 @@ spawn-monsters=true
 view-distance=10
 EOF;
 		return $config;	
+	}
+	
+	public function getConsoleStreamLink() {
+		return u(ROUTE_USER_SERVER_CONSOLE_STREAM, array('serverID'=>$this->id()));
+	}
+	
+	public function getConsoleInputLink() {
+		return u(ROUTE_USER_SERVER_CONSOLE_INPUT, array('serverID'=>$this->id()));
+	}
+	
+	public function getTestLink() {
+		return u(ROUTE_USER_SERVER_TEST, array('serverID'=>$this->id()));
 	}
 	
 	public function getSlug() {

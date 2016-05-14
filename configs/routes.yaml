@@ -76,6 +76,12 @@ http:
         restrictTo:
           role: member
         
+    adm_server_test:
+        path: "/user/server/{id:serverID}/test.json"
+        controller: "MinecraftServerTestController"
+        restrictTo:
+          role: member
+        
 #    user_project:
 #        path: "/user/project/{id:projectID}.html"
 #        controller: "ProjectController"

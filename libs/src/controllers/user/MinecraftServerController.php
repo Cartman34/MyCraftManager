@@ -9,17 +9,7 @@ class MinecraftServerController extends AdminController {
 	 */
 	public function run(HTTPRequest $request) {
 
-		/* @var $USER User */
-// 		global $USER;
-
-		/* @var $serverUser MinecraftServerUser */
 		/* @var $server MinecraftServer */
-		
-// 		debug('TEST_DEBUG');
-// 		$user	= &$USER;
-		
-// 		$serverDomain	= MinecraftServer::getDomain();
-		
 		$serverID	= $request->getPathValue('serverID');
 		$server		= MinecraftServer::load($serverID, false);
 		
@@ -97,7 +87,8 @@ class MinecraftServerController extends AdminController {
 		return $this->renderHTML('app/user_server', array(
 // 			'user'			=> $user,
 			'server'		=> $server,
-			'PageTitle'		=> $server.''
+			'PageTitle'		=> $server.'',
+			'ContentTitle'	=> $server.''
 		));
 	}
 

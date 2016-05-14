@@ -71,7 +71,9 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 // 					register_shutdown_function('endSSHConnection');
 // 				stream_set_blocking($stream, false);
 
-				$i = 0;
+// 				$i = 0;
+// 				$playerRefresh = ms();
+				$playerRefresh = time();
 				$missed = 0;
 				try {
 					do {
@@ -109,13 +111,17 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 	// 							log_debug('Always connected at '.date('r').', status => '.connection_status());
 						}
 						
+						$now = time();
+// 						$now = ms();
 						// Sometimes it just happens
-						if( $i >= 50 ) {
+						if( ($now - $playerRefresh) >= 5 ) {
+							$playerRefresh = $now;
+// 						if( $i >= 30 ) {
 							echo "event: players\n";//Require something sent
 							echo "data: ".json_encode($minecraft->listPlayers(true))."\n\n";//Require something sent
-							$i = 0;
+// 							$i = 0;
 						}
-						$i++;
+// 						$i++;
 					} while( !connection_aborted() );
 	// 					debug('Connection aborted by user at '.date('r'));
 	// 					log_debug('Connection aborted by user at '.date('r'));

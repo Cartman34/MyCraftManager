@@ -1767,3 +1767,7 @@ function is_closure($v) {
 function is_exception($t) {
 	return is_object($t) && ($t instanceof Exception);
 }
+
+function ms() {
+	return round(microtime(true)*1000);
+}

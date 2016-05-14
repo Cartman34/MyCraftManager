@@ -29,6 +29,7 @@ addAutoload('AdminServerSoftwaresController',	'src/controllers/admin/AdminServer
 
 addAutoload('UserServersController',			'src/controllers/user/UserServersController');
 addAutoload('MinecraftServerController',		'src/controllers/user/MinecraftServerController');
+addAutoload('MinecraftServerTestController',	'src/controllers/user/MinecraftServerTestController');
 addAutoload('MinecraftServerConsoleStreamController',	'src/controllers/user/MinecraftServerConsoleStreamController');
 addAutoload('MinecraftServerConsoleInputController',	'src/controllers/user/MinecraftServerConsoleInputController');
 

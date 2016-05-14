@@ -11,6 +11,7 @@ fields:
     name:               string(3, 50)
     software_id:        ref(serversoftware)
     path:               string
+    server_ip:          ip
     ssh_host:           string(100)
     ssh_port:           natural(65535)[nullable]    # SSH Port, default is 22
     ssh_user:           string(50)

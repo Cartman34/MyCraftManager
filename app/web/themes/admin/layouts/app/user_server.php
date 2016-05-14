@@ -8,6 +8,7 @@
 
 global $formData;
 
+// debug('$ContentTitle', $ContentTitle);
 HTMLRendering::useLayout('page_skeleton');
 
 $isInstalled	= $server->isInstalled();
@@ -251,7 +252,6 @@ if( !$isInstalled ) {
 		?>
 	<div class="col-lg-6">
 		<?php HTMLRendering::useLayout('panel-default'); ?>
-		
 <!-- 			<p> -->
 <!-- 			Gérez vos projets, enregistrez les ici ! -->
 <!-- 			</p> -->
@@ -260,8 +260,7 @@ if( !$isInstalled ) {
 				<input type="text" class="form-control" id="ConsoleInput" placeholder="Entrez votre commande">
 				<span class="input-group-btn"><button class="btn btn-default" id="ConsoleSendButton" title="Cliquez pour envoyer" type="button">Envoyer</button></span>
 			</div>
-		
-		<?php HTMLRendering::endCurrentLayout(array('title'=>'Console')); ?>
+		<?php HTMLRendering::endCurrentLayout(array('title'=>'Console', 'bodyClass'=>'consolewrapper')); ?>
 	</div>
 		<?php
 	}
@@ -280,7 +279,9 @@ $(function() {
 	var consoleStartButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Connecter</button>');
 	var consoleStopButton = $('<button class="btn btn-primary btn-xs pull-right" type="button">Déconnecter</button>');
 	var consoleList = $(".consolestream").first();
+	var consoleMaxRows = 200;
 	var scrollMax = consoleList.height();
+	var attachedScroll = true;
 	
 	var playerCount = $(".playercount");
 	var playersList = $(".playerslist").first();
@@ -294,9 +295,9 @@ $(function() {
 	var source;
 	function startConsole() {
 		consoleStartButton.hide();
+		consoleList.empty();
 		source = new EventSource('<?php echo $server->getConsoleStreamLink(); ?>');
 // 		source = new EventSource('http://flo.mcm.sowapps.com/user/server/8/console.html');
-		var attachedScroll = true;
 	// 	console.log('consoleList.height', consoleList.height());
 	// 	console.log('consoleList.innerHeight', consoleList.innerHeight());
 	// 	console.log('consoleList.outerHeight', consoleList.outerHeight());
@@ -304,6 +305,10 @@ $(function() {
 		source.addEventListener('message', function(e) {
 // 			console.log(e.data);
 			consoleList.append('<li class="list-group-item">'+e.data+'</li>');
+			consoleList.children("li").slice(0, -consoleMaxRows).remove();
+// 			if( consoleList.children("li").length > consoleMaxRows ) {
+
+// 			}
 			if( attachedScroll ) {
 				consoleList.scrollTop(consoleList[0].scrollHeight);
 			}
@@ -355,7 +360,7 @@ $(function() {
 			if (e.readyState == EventSource.CLOSED) {
 				// Connection was closed.
 				consoleIcon.css("color", consoleIcon.data("offline"));
-				consolePing.text("");
+// 				consolePing.text("");
 			}
 		}, false);
 		
@@ -368,9 +373,10 @@ $(function() {
 		}
 		consoleStopButton.hide();
 		source.close();
-		consoleList.empty();
-		consolePing.text("");
+// 		consoleList.empty();
+// 		consolePing.text("");
 		consoleIcon.css("color", consoleIcon.data("offline"));
+// 		console.log('consoleStartButton', consoleStartButton);
 		consoleStartButton.show();
 	}
 	
@@ -379,7 +385,10 @@ $(function() {
 	
 	consoleList.scroll(function(e) {
 		var scrollDelta = consoleList[0].scrollHeight-consoleList.height()-consoleList.scrollTop();
+// 		console.log("scrollDelta => "+scrollDelta);
+// 		console.log("scrollMax => "+scrollMax);
 		attachedScroll = scrollDelta < scrollMax;
+// 		console.log("attachedScroll ? "+attachedScroll);
 	});
 	
 	var consoleInput = $("#ConsoleInput");
@@ -434,7 +443,7 @@ $(function() {
 		var input = $(this);
 		var showBtn = input.next().find(".showbtn");
 		var hideBtn = input.next().find(".hidebtn");
-		console.log("showpassword", showBtn, input);
+// 		console.log("showpassword", showBtn, input);
 		showBtn.click(function() {
 			input.attr("type", "text");
 			showBtn.hide();
@@ -446,18 +455,44 @@ $(function() {
 			hideBtn.hide();
 		});
 	});
+	
+	$(".consolewrapper").click(function() {
+// 		console.log("Console click, selection ["+getSelection()+"]");
+		if( getSelection() != "" ) { return; }
+		consoleInput.focus();
+	});
 });
 //* /
 </script>
 <style>
+.consolewrapper {
+	font-family: 'Lucida Console', 'Lucida Sans Typewriter', monaco, 'Bitstream Vera Sans Mono', monospace;
+	background-color: #262626;
+	color: #EEEEEE;
+}
+.consolewrapper input {
+	background-color: #202020;
+	color: #EEEEEE;
+}
+.consolewrapper input[disabled], .consolewrapper input[readonly] {
+	background-color: #101010;
+}
+
+.consolewrapper button {
+	background-color: #222;
+	color: #FFFFFF;
+}
 .consolestream {
 	height: 300px;
 	overflow-y: scroll;
 	word-wrap: break-word;
 }
 .consolestream .list-group-item {
-	padding: 4px 8px;
+	padding: 2px 2px 2px 0px;
+/* 	padding: 4px 8px; */
 	border: none;
+	background: inherit;
+	font-size: 12px;
 }
 .input-group-btn:last-child>.btn.showbtn:not(:last-child):not(.dropdown-toggle) {
 	border-top-right-radius: 4px;

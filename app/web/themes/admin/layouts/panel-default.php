@@ -10,6 +10,10 @@ if( !isset($footer) ) {
 	$footer	= '';
 }
 
+if( !isset($bodyClass) ) {
+	$bodyClass	= '';
+}
+
 // if( !isset($actions) ) {
 // 	$actions	= 0;
 // } else 
@@ -24,7 +28,7 @@ if( !isset($footer) ) {
 		<h4 class="panel-title"><?php echo $title; ?></h4>
 	</div>
 	<?php } ?>
-	<div class="panel-body">
+	<div class="panel-body <?php echo $bodyClass; ?>">
 <?php
 echo $Content;
 ?>

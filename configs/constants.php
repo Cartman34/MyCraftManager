@@ -51,6 +51,9 @@ define('ROUTE_ADM_MYSETTINGS',	'adm_mysettings');
 
 define('ROUTE_USER_SERVERS',	'user_servers');
 define('ROUTE_USER_SERVER',		'user_server');
+define('ROUTE_USER_SERVER_CONSOLE_STREAM',	'adm_server_console_stream');
+define('ROUTE_USER_SERVER_CONSOLE_INPUT',	'adm_server_console_input');
+define('ROUTE_USER_SERVER_TEST',			'adm_server_test');
 
 // Route
 defifn('DEFAULTROUTE',			ROUTE_LOGIN);
