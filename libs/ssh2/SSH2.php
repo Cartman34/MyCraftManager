@@ -9,9 +9,11 @@
  * Or apt-get install libssh2-php
  */
 class SSH2 {
+	
+	const DEFAULT_PORT = 22;
 
 	protected $host;
-	protected $port = 22;
+	protected $port = self::DEFAULT_PORT;
 	protected $fingerprint;
 // 	protected $timeout;
 	
@@ -26,10 +28,12 @@ class SSH2 {
 // 	protected $shell;
 	
 	protected $connection;
-	protected $allowingNewFingerprint=false;
+	protected $allowingNewFingerprint = false;
 	
-	public function __construct($host, $port=22, $fingerprint=null) {
+	public function __construct($host, $port=self::DEFAULT_PORT, $fingerprint=null) {
 		$this->setHost($host);
+		// The port will always have a value
+// 		$this->setPort(self::DEFAULT_PORT);
 		$this->setPort($port);
 		$this->setFingerprint($fingerprint);
 	}

@@ -148,8 +148,8 @@ class MinecraftServerConnector {
 // 		$ssh->exec('nohup bash -c "'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
 // 		$ssh->exec('nohup ./'.$this->getStartCommand().' 1> logs/output.log 2> logs/error.log &', $output, $error);
 // 		$ssh->exec('nohup ./'.$this->getStartCommand().' 2> logs/output.log', $output, $error);
-		debug('start - output', $output);
-		debug('start - error', $error);
+// 		debug('start - output', $output);
+// 		debug('start - error', $error);
 		$this->started = true;
 	}
 	
@@ -297,7 +297,7 @@ class MinecraftServerConnector {
 			$this->rcon->connect();
 			$ok = true;
 		} catch( Exception $e ) {
-			debug('testRcon() - Exception - '.$e->getMessage(), $e);
+// 			debug('testRcon() - Exception - '.$e->getMessage(), $e);
 		}
 		return $ok;
 	}
