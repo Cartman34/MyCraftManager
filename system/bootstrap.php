@@ -47,10 +47,12 @@ if( !ini_get('date.timezone') ) {
 
 // These constants take care about paths through symbolic links.
 // defifn('ORPHEUSPATH',		dirpath($_SERVER['SCRIPT_FILENAME']));	// The Orpheus sources
-defifn('ORPHEUSPATH',		dirpath(dirname(ACCESSPATH)));	// The Orpheus sources
-defifn('APPLICATIONPATH',	ORPHEUSPATH);		// The application sources
-defifn('INSTANCEPATH',		APPLICATIONPATH);	// The instance sources
+defifn('ORPHEUSPATH',		dirpath(dirname(ACCESSPATH)));	// The Orpheus sources - The current file one
+defifn('APPLICATIONPATH',	ORPHEUSPATH);		// The application sources - default is Orpheus path,
+defifn('INSTANCEPATH',		APPLICATIONPATH);	// The instance sources - default is Application path
 // echo 'ORPHEUSPATH : '.ORPHEUSPATH.'<br />';
+// echo 'APPLICATIONPATH : '.APPLICATIONPATH.'<br />';
+// echo 'INSTANCEPATH : '.INSTANCEPATH.'<br />';
 // die('Stopping script process');
 
 addSrcPath(ORPHEUSPATH);
@@ -334,8 +336,13 @@ try {
 	}
 	
 	defifn('VENDORPATH', APPLICATIONPATH.'vendor/');
+// 	debug('VENDORPATH autoload => '.VENDORPATH.'autoload.php => '.b(file_exists(VENDORPATH.'autoload.php')));
+// 	die();
 	if( file_exists(VENDORPATH.'autoload.php') ) {
-		$PackageLoader	= include VENDORPATH.'autoload.php';
+// 		debug('Composer autoload found');
+// 		die();
+		$PackageLoader	= require VENDORPATH.'autoload.php';
+// 		$PackageLoader	= include VENDORPATH.'autoload.php';
 	}
 	
 	Config::build('engine');// Some libs should require to get some configuration.

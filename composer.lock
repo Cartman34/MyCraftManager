@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "a7af1079e98854aa0670c1dd222f3671",
+    "content-hash": "8b7ce6aa99a9f6d5dd82749385c2b05f",
+    "packages": [
+        {
+            "name": "orpheus/orpheus-ssh2",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sowapps/orpheus-ssh2.git",
+                "reference": "e5d998f3cc275f9f881e05eb3902df12ad341056"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-ssh2/zipball/e5d998f3cc275f9f881e05eb3902df12ad341056",
+                "reference": "e5d998f3cc275f9f881e05eb3902df12ad341056",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orpheus\\Net\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent HAZARD",
+                    "email": "f.hazard@sowapps.com",
+                    "homepage": "http://sowapps.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Orpheus SSH2",
+            "keywords": [
+                "ssh2"
+            ],
+            "time": "2016-05-15 09:21:32"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "orpheus/orpheus-ssh2": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

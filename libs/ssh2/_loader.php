@@ -6,4 +6,4 @@
  * 
  */
  
-addAutoload('SSH2',					'ssh2/SSH2');
+// addAutoload('SSH2',					'ssh2/SSH2');

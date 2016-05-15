@@ -1,4 +1,6 @@
 <?php
+use Orpheus\Net\SSH2;
+
 /**
  * The Minecraft Server Connector class
  * 

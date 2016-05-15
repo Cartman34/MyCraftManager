@@ -1,3 +1,12 @@
 {
-	"description" : "An Orpheus Project"
+	"description" : "The MyCraft Manager",
+	"name" : "sowapps/mycraftmanager",
+	"type" : "project",
+	"require" : {
+		"orpheus/orpheus-ssh2" : "dev-master"
+	},
+	"keywords" : [
+		"minecraft",
+		"manager"
+	]
 }
