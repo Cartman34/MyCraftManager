@@ -25,7 +25,6 @@ $Libraries	= array(
 	'rendering',
 	// Additional
 // 	'twigrenderer',
-	'ssh2',
 	'rcon',
 	// Your sources
 	'src',

@@ -29,15 +29,16 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 		 * https://developer.mozilla.org/fr/docs/Server-sent_events/Using_server-sent_events
 		 * http://www.html5rocks.com/en/tutorials/eventsource/basics/
 		 */
-		ignore_user_abort(true);
-		set_time_limit(0);
-		ini_set("default_socket_timeout", 3600);
-		ini_set('output_buffering', 0);
-		apache_setenv('no-gzip', 1);
-		ini_set('zlib.output_compression', 0);
-		ini_set('implicit_flush', 1);
+		ignore_user_abort(true);// Ignore user disconnection
+		set_time_limit(0);// No limit to execution
+		ini_set('default_socket_timeout', 3600);// Increase timeout of sockets
+		
+		ini_set('output_buffering', 0);// Disable default output buffering
+		apache_setenv('no-gzip', 1);// Disable compression (capturing content)
+		ini_set('zlib.output_compression', 0);// Disable compression (capturing content)
+		ini_set('implicit_flush', 1);// Flush as soon as possible
 // 		die('Content type');
-		session_write_close();
+		session_write_close();// Unlock session, close it
 // 		debug('Headers', headers_list());
 // 		$testID = date('r');
 // 			debug('Starting mc logs listen through SSH2 V14 => '.$testID);
@@ -53,6 +54,7 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 // 				$connection = $ssh->getConnection();
 				$stream = $minecraft->getLogsStream();
 
+				// Empty the buffer
 				while( ob_get_level() && ob_end_clean() );
 // 				flush();
 				if( headers_sent($sentFile, $sentLine) ) {

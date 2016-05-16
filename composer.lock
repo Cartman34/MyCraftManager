@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sowapps/orpheus-ssh2.git",
-                "reference": "e5d998f3cc275f9f881e05eb3902df12ad341056"
+                "reference": "d8d61e9095b33791c7b9aa0fc679091883f68750"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sowapps/orpheus-ssh2/zipball/e5d998f3cc275f9f881e05eb3902df12ad341056",
-                "reference": "e5d998f3cc275f9f881e05eb3902df12ad341056",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-ssh2/zipball/d8d61e9095b33791c7b9aa0fc679091883f68750",
+                "reference": "d8d61e9095b33791c7b9aa0fc679091883f68750",
                 "shasum": ""
             },
             "type": "library",
@@ -43,7 +43,7 @@
             "keywords": [
                 "ssh2"
             ],
-            "time": "2016-05-15 09:21:32"
+            "time": "2016-05-16 07:42:55"
         }
     ],
     "packages-dev": [],
