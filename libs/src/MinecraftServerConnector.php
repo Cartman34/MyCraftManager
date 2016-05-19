@@ -166,7 +166,7 @@ class MinecraftServerConnector {
 	/* *** Server *** */
 	
 	public function getLogsStream() {
-		$stream = $this->getSSH()->execRaw('tail -n 100 -f '.$this->path.'/logs/output.log');
+		$stream = $this->getSSH()->execRaw('tail -n 100 -f '.$this->path.'/logs/output.log', true);
 // 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
 // 		$stream = $this->getSSH()->execRaw('tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log | grep -v "RCON Listener"');
 		stream_set_blocking($stream, false);
@@ -201,6 +201,25 @@ class MinecraftServerConnector {
 			
 		}
 		return $ok;
+	}
+	
+	public function getProcessInformations() {
+		$pid = $this->getPID();
+		if( !$pid ) {
+			return null;
+		}
+		$ssh = $this->getSSH();
+		$ssh->setCurrentDirectory($this->getPath());
+		$ssh->exec("ps -p ".$pid." -ho %cpu,cputime,%mem,vsz,rss", $output, $error);
+// 		debug('get pid - output chars', stringify(count_chars($output, 1)));
+// 		debug('get pid - output', $output);
+// 		debug('get pid - error', $error);
+		if( !$output ) {
+			return null;
+		}
+		$process = new stdClass();
+		list($process->cpu_pct, $process->cpu_time, $process->mem_pct, $process->mem_virt, $process->mem_res) = explode(' ', trim($output));
+		return $process;
 	}
 	
 	public function getPID() {

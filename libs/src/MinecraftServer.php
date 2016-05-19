@@ -343,6 +343,10 @@ EOF;
 		return $config;	
 	}
 	
+	public function getAdminLink() {
+		return u(ROUTE_USER_SERVER, array('serverID'=>$this->id()));
+	}
+	
 	public function getConsoleStreamLink() {
 		return u(ROUTE_USER_SERVER_CONSOLE_STREAM, array('serverID'=>$this->id()));
 	}

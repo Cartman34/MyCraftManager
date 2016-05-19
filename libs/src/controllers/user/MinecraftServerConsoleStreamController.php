@@ -49,33 +49,19 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 			/* @var MinecraftServer $server */
 			if( $server ) {
 				$minecraft = $server->getConnector();
-// 				$ssh = $server->getConnectedSSH();
 				
-// 				$connection = $ssh->getConnection();
 				$stream = $minecraft->getLogsStream();
 
 				// Empty the buffer
 				while( ob_get_level() && ob_end_clean() );
-// 				flush();
 				if( headers_sent($sentFile, $sentLine) ) {
-					throw new Exception('Can not stream, header already sent by '.$sentFile.':'.$sentLine);
+					throw new \Exception('Can not stream, header already sent by '.$sentFile.':'.$sentLine);
 				}
 				header('Content-Type: text/event-stream');
 				header('Cache-Control: no-cache');
 				
-// 				$stream = ssh2_exec($connection, 'tail -n 50 -f /home/minecraft/servers/InfinityServer2016/logs/latest.log');
-// 					function endSSHConnection() {
-// 						global $connection;
-// // 						echo 'Shutdown<br />';
-// // 						log_debug('Shutdown connection at '.date('r'));
-// 						$connection && fclose($connection);
-// 					}
-// 					register_shutdown_function('endSSHConnection');
-// 				stream_set_blocking($stream, false);
-
-// 				$i = 0;
-// 				$playerRefresh = ms();
 				$playerRefresh = time();
+				$processRefresh = time()+3;// Delayed refresh
 				$missed = 0;
 				try {
 					do {
@@ -83,9 +69,6 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 						
 						if( $line ) {
 							// Filter
-	// 						echo "data: ".escapeText(!!strstr($line, 'RCON Listener'))."\n";
-	// 						if( strstr($line, 'RCON Listener') ) {
-	// 						}
 							if( !strstr($line, 'RCON Listener') ) {
 								echo "data: ".str_replace("\n", '<br>', escapeText($line))."\n\n";
 								flush();
@@ -101,16 +84,11 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 								$missed = 0;
 								echo "event: status\n";//Require something sent
 								echo "data: ok\n\n";//Require something sent
-	// 							echo "event: ping\n";//Require something sent
-	// 							echo "data: ".round(microtime(true)*1000)."\n\n";//Require something sent
-	// 							echo "data: ".microtime(true)."\n\n";//Require something sent
-	// 							echo "data: ".date(DATE_ISO8601)."\n\n";//Require something sent
 	// 							echo "\n\n";//Require something sent
 	// 							echo "\x00";//Require something sent
 								flush();
 							}
 							sleep(1);
-	// 							log_debug('Always connected at '.date('r').', status => '.connection_status());
 						}
 						
 						$now = time();
@@ -118,16 +96,22 @@ class MinecraftServerConsoleStreamController extends HTTPController {
 						// Sometimes it just happens
 						if( ($now - $playerRefresh) >= 5 ) {
 							$playerRefresh = $now;
-// 						if( $i >= 30 ) {
 							echo "event: players\n";//Require something sent
 							echo "data: ".json_encode($minecraft->listPlayers(true))."\n\n";//Require something sent
-// 							$i = 0;
+						}
+// 						if( ($now - $processRefresh) >= 2 ) {
+						if( ($now - $processRefresh) >= 5 ) {
+							$processRefresh = $now;
+// 							debug('process', $minecraft->getProcessInformations());
+							echo "event: process\n";//Require something sent
+							echo "data: ".json_encode($minecraft->getProcessInformations())."\n\n";//Require something sent
 						}
 // 						$i++;
 					} while( !connection_aborted() );
 	// 					debug('Connection aborted by user at '.date('r'));
 	// 					log_debug('Connection aborted by user at '.date('r'));
 				} catch ( Exception $e ) {
+// 					echo $e;
 					echo "event: status\n";//Require something sent
 					echo "data: disconnected\n\n";//Require something sent
 				}

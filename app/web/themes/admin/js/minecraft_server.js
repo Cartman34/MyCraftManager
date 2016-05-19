@@ -93,6 +93,13 @@ $(function() {
 			}
 		}, false);
 		
+		source.addEventListener('process', function(e) {
+			var process = JSON.parse(e.data);
+			process.mem_res = Math.ceil(process.mem_res/1024)+'Mo';
+			process.mem_virt = Math.ceil(process.mem_virt/1024)+'Mo';
+			$("body").fill("process-", process);
+		});
+		
 		source.addEventListener('players', function(e) {
 // 			console.log(e.data, e);
 			var players = JSON.parse(e.data);
@@ -144,7 +151,7 @@ $(function() {
 	
 		source.addEventListener('error', function(e) {
 			console.log("Error", e);
-			if (e.readyState == EventSource.CLOSED) {
+			if( e.readyState == EventSource.CLOSED ) {
 				// Connection was closed.
 				consoleIcon.css("color", consoleIcon.data("offline"));
 // 				consolePing.text("");

@@ -77,13 +77,13 @@ while( $server = $serverQuery->fetch() ) {
 	echo '
 <tr>
 	<td class="hidden-xs hidden-sm">'.$server->id().'</td>
-	<td><i class="fa fa-fw fa-power-off" style="color: '.($server->isonline ? '#2FCF2E' : 'grey').';"></i> '.$server.'</td>
+	<td><i class="fa fa-fw fa-power-off" style="color: '.($server->isonline ? '#2FCF2E' : 'grey').';"></i> <a href="'.$server->getAdminLink().'">'.$server.'</a></td>
 	<td>'.$server->getServerSoftware().'</td>
 	<td>'.$server->ssh_host.'</td>
 	<td>'.dt($server->create_date).'</td>
 	<td>
 		<div class="btn-group" role="group" aria-label="Actions">
-			<button type="button" class="btn btn-default editbtn"><i class="fa fa-edit"></i></button>
+			<a href="'.$server->getAdminLink().'" class="btn btn-default"><i class="fa fa-edit"></i></a>
 			<button type="button" class="btn btn-default deletebtn"><i class="fa fa-times"></i></button>
 		</div>
 	</td>
