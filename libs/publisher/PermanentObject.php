@@ -12,7 +12,6 @@ abstract class PermanentObject {
 	
 	protected static $table				= null;
 	protected static $DBInstance		= null;
-// 	protected static $sqlAdapter		= null;
 	// Contains all fields
 	protected static $fields			= array();
 	// Contains fields editables by users
@@ -391,36 +390,15 @@ abstract class PermanentObject {
 		if( empty($this->modFields) || $this->isDeleted() ) {
 			return 0;
 		}
-// 		$updQ = '';
-// 		foreach($this->modFields as $fieldname) {
-// 			if( $fieldname != static::$IDFIELD ) {
-// 				$updQ .= ((!empty($updQ)) ? ', ' : '').static::escapeIdentifier($fieldname).'='.static::formatFieldValue($fieldname, $this->getValue($fieldname));
-// 			}
-// 		}
 
-// 		debug('$this->all', $this->all);
 		$data = array_filterbykeys($this->all, $this->modFields);
-// 		debug('$this->modFields', $this->modFields);
-// 		debug('$data', $data);
 		if( !$data ) {
 			throw new Exception('No updated data found but there is modified fields, unable to update');
 		}
 		$operation = $this->getUpdateOperation($data, $this->modFields);
 		// Do not validate, new data are invalid due to the fact the new data are already in object
 // 		$operation->validate();
-// 		debug('Is valid ? '.b($operation->isValid()));
 		$r = $operation->run();
-// 		$r = $operation->runIfValid();
-		
-// 		$IDFIELD	= static::$IDFIELD;
-// 		$options	= array(
-// 			'what'		=> $updQ,
-// 			'table'		=> static::$table,
-// 			'where'		=> "{$IDFIELD}={$this->{$IDFIELD}}",
-// 			'number'	=> 1,
-// 		);
-// 		$r	= SQLAdapter::doUpdate($options, static::$DBInstance, static::$IDFIELD);
-// 		$modFields	= $this->modFields;
 		$this->modFields	= array();
 		if( !$this->onSavedInProgress ) {
 			// Protect script against saving loops
@@ -932,7 +910,7 @@ abstract class PermanentObject {
 	*/
 	public static function escapeIdentifier($identifier=null) {
 		$sqlAdapter = static::getSQLAdapter();
-		return $sqlAdapter->escapeIdentifier($identifier);
+		return $sqlAdapter->escapeIdentifier($identifier ? $identifier : static::$table);
 // 		return SQLAdapter::doEscapeIdentifier($identifier ? $identifier : static::$table, static::$DBInstance);
 	}
 	/** Escape identifier through instance
