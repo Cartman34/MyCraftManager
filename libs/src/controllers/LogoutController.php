@@ -10,14 +10,10 @@ class LogoutController extends HTTPController {
 	 */
 	public function run(HTTPRequest $request) {
 		
-// 		global $USER;
 		$user	= User::getLoggedUser();
-// 		debug('User is logged in ? '.b(isset($user)));
 		if( isset($user) ) {
-// 			debug('User is logged in');
 			$user->logout();
 		}
-// 		die('user logged out');
 		return new RedirectHTTPResponse(DEFAULTROUTE);
 	}
 
