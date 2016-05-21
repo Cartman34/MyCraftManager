@@ -2,13 +2,10 @@
 global $USER;
 HTMLRendering::useLayout('page_skeleton');
 
-// displayReportsHTML();
-
 if( User::isLogged() ) {
 	echo "<p>Welcome {$USER->fullname} </p>";
 }
 
-// debug('Request', $Request);
 ?>
 <div class="row">
 	
@@ -19,7 +16,7 @@ if( User::isLogged() ) {
 			<?php displayReportsHTML('global'); ?>
 			<div class="form-group">
 				<label for="loginEmail">Email</label>
-				<input type="text" class="form-control" id="loginEmail" name="login[email]" placeholder="Enter your username"/>
+				<input type="text" class="form-control" id="loginEmail" name="login[email]" placeholder="Enter your email"/>
 			</div>
 			<div class="form-group">
 				<label for="loginPassword">Password</label>
@@ -36,14 +33,6 @@ if( User::isLogged() ) {
 			<legend>Register</legend>
 			<?php displayReportsHTML('register'); ?>
 			
-<!-- 			<div class="form-group"> -->
-<!-- 				<label for="registerUsername">Your nickname</label> -->
-<!-- 				<input type="text" class="form-control" id="registerUsername" name="user[name]" required placeholder="My ID to sign in, e.g. cartman"/> -->
-<!-- 			</div> -->
-<!-- 			<div class="form-group"> -->
-<!-- 				<label for="registerFullname">Your public name</label> -->
-<!-- 				<input type="text" class="form-control" id="registerFullname" name="user[fullname]" required placeholder="My displayed name, e.g. Eric Cartman" /> -->
-<!-- 			</div> -->
 			<div class="form-group">
 				<label for="registerFullname">Your name</label>
 				<input type="text" class="form-control" id="registerFullname" name="user[fullname]" required placeholder="My displayed name, e.g. Cartman34" />

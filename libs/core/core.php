@@ -679,8 +679,8 @@ function reportSuccess($report, $domain='global') {
 }
 
 /** Reports an information to the user
- * @param $report string The message to report.
- * @param $domain string The domain fo the message. Not used for translation. Default value is global.
+ * @param string $report The message to report.
+ * @param string $domain The domain fo the message. Not used for translation. Default value is global.
  * @see addReport()
 
  * Adds the report $message to the list of reports for this type 'info'.
@@ -690,8 +690,8 @@ function reportInfo($report, $domain='global') {
 }
 
 /** Reports a warning
- * @param $report string The message to report.
- * @param $domain string The domain fo the message. Not used for translation. Default value is the domain of Exception in case of UserException else 'global'.
+ * @param string $report The message to report.
+ * @param string $domain The domain fo the message. Not used for translation. Default value is the domain of Exception in case of UserException else 'global'.
  * @see addReport()
 
  * Adds the report $message to the list of reports for this type 'warning'.
@@ -725,7 +725,9 @@ function reportError($report, $domain=null, $severity=1) {
 	return addReport($report, 'error', $domain === NULL ? 'global' : $domain, $code, $severity);
 }
 
-/** Checks if there is error reports
+/**
+ * Check if there is error reports
+ * 
  * @return boolean True if there is any error report.
 */
 function hasErrorReports() {
@@ -739,9 +741,11 @@ function hasErrorReports() {
 	return false;
 }
 
-/** Rejects reports
- * @param $report The report message to reject, could be an array.
- * @param $type Filter reject by type, could be an array. Default value is null, not filtering.
+/**
+ * Reject reports
+ * 
+ * @param mixed $report The report message to reject, could be an array.
+ * @param string $type Filter reject by type, could be an array. Default value is null, not filtering.
  * @see addReport()
  * 
  * Register this report to be rejected in the future, addReport() will check it.
@@ -763,7 +767,9 @@ function rejectReport($report, $type=null) {
 	}
 }
 
-/** Gets some/all reports
+/**
+ * Get some/all reports
+ * 
  * @param string $stream The stream to get the reports. Default value is "global".
  * @param string $type Filter results by report type. Default value is null.
  * @param boolean $delete True to delete entries from the list. Default value is true.

@@ -67,6 +67,3 @@ DirectoryIndex index.php index.html
     </IfModule>
 </IfModule>
 
-#Test
-SetEnv no-gzip dont-vary
-

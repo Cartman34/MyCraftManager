@@ -336,79 +336,21 @@ try {
 	}
 	
 	defifn('VENDORPATH', APPLICATIONPATH.'vendor/');
-// 	debug('VENDORPATH autoload => '.VENDORPATH.'autoload.php => '.b(file_exists(VENDORPATH.'autoload.php')));
-// 	die();
+	
 	if( file_exists(VENDORPATH.'autoload.php') ) {
-// 		debug('Composer autoload found');
-// 		die();
 		$PackageLoader	= require VENDORPATH.'autoload.php';
-// 		$PackageLoader	= include VENDORPATH.'autoload.php';
 	}
 	
 	Config::build('engine');// Some libs should require to get some configuration.
 	
 	$RENDERING	= Config::get('default_rendering');
 	
-// 	$_SERVER['PHP_AUTH_PW']	= '******';
-// 	debug('$_SERVER', $_SERVER);
-	
-	
-// 	includePath(LIBSDIR);// Require some hooks.
-	
 	// Here starts Hooks and Session too.
 	Hook::trigger(HOOK_STARTSESSION);
 
-// 	if( !defined('TERMINAL') ) {
 	if( IS_WEB ) {
 
 		startSession();
-		/*
-		defifn('SESSION_COOKIE_LIFETIME',	86400*7);
-		// Set session cookie parameters, HTTPS session is only HTTPS
-		session_set_cookie_params(SESSION_COOKIE_LIFETIME, PATH, HOST, HTTPS, true);
-
-		//PHP is unable to manage exception thrown during session_start()
-		$ERROR_ACTION	= ERROR_DISPLAY_RAW;
-// 		$NO_EXCEPTION	= 1;
-		session_start();
-		$ERROR_ACTION	= ERROR_THROW_EXCEPTION;
-// 		$NO_EXCEPTION	= 0;
-		
-// 		text('clientIP() => '.clientIP());
-		
-// 		debug('$_SESSION start', $_SESSION);
-		$initSession	= function() {
-// 			die('Init session');
-			$_SESSION	= array('ORPHEUS' => array('LAST_REGENERATEID'=>TIME, 'CLIENT_IP'=>clientIP()));
-			if( defined('SESSION_VERSION') ) {
-				$_SESSION['ORPHEUS']['SESSION_VERSION']	= SESSION_VERSION;
-			}
-		};
-		if( !isset($_SESSION['ORPHEUS']) ) {
-			$initSession();
-		} else // Outdated session version
-		if( defined('SESSION_VERSION') && (!isset($_SESSION['ORPHEUS']['SESSION_VERSION']) || floor($_SESSION['ORPHEUS']['SESSION_VERSION']) != floor(SESSION_VERSION)) ) {
-			$initSession();
-			throw new UserException('outdatedSession');
-		} else // Old session (Will be removed)
-		if( !isset($_SESSION['ORPHEUS']['CLIENT_IP']) ) {
-			$_SESSION['ORPHEUS']['CLIENT_IP']	= clientIP();
-		} else // Hack Attemp' - Session stolen
-		if( $_SESSION['ORPHEUS']['CLIENT_IP'] != clientIP() ) {
-			// it will return hack attemp' even if user is using a VPN
-			$initSession();
-			throw new UserException('movedSession');
-		}
-// 		if( version_compare(PHP_VERSION, '4.3.3', '>=') ) {
-// 			// Only version >= 4.3.3 can regenerate session id without losing data
-// 			// http://php.net/manual/fr/function.session-regenerate-id.php
-// 			if( TIME-$_SESSION['ORPHEUS']['LAST_REGENERATEID'] > 600 ) {
-// 				$_SESSION['ORPHEUS']['LAST_REGENERATEID']	= TIME;
-// 				session_regenerate_id();
-// 			}
-// 		}
-		unset($initSession);
-		*/
 	
 	}
 	ob_end_clean();
