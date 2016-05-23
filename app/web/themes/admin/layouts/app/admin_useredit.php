@@ -50,7 +50,7 @@ HTMLRendering::useLayout('page_skeleton');
 			<div class="form-group">
 				<label>Accréditations</label>
 				<select name="user[accesslevel]" class="form-control">
-					<?php echo htmlOptions('user/accesslevel', User::getUserRoles(), null, OPT_LABEL2VALUE, 'role_', User::getDomain()); ?>
+					<?php echo htmlOptions('user/accesslevel', array_filter(User::getUserRoles(), function($value) { return $value >= 0; }), null, OPT_LABEL2VALUE, 'role_', User::getDomain()); ?>
 				</select>
 			</div>
 				<?php
